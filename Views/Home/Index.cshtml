@@ -1,0 +1,23 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<div class="jumbotron">
+    <h1 class="text-center ">
+        <img src="~/fonts/coollogo_com-14939902.png" class="" alt="Responsive image"  />
+    </h1>
+</div>
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <div class=" text-center btn-toolbar" role="toolbar">
+            <div class="col-md-4">
+                @Html.ActionLink("נייע תלמיד", "NewClient", "Clients", routeValues: null, htmlAttributes: new { @class = " btn btn-primary btn-lg col-md-12" })
+            </div>
+            <div class="col-md-4">
+                @Html.ActionLink("תלמידים", "Index", "Clients", routeValues: null, htmlAttributes: new { @class = "btn btn-primary btn-lg col-md-12 " })
+            </div>
+            <div class="col-md-4">
+                @Html.ActionLink("באלאנסן", "Index", "Balance", routeValues: null, htmlAttributes: new { @class = "btn btn-primary btn-lg col-md-12 " })
+            </div>
+        </div>
+    </div>
+</div>

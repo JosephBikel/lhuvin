@@ -1,0 +1,40 @@
+﻿@model Lhuvin.Models.Client
+<header class="row page-header">
+    <div class="col-md-10">
+        <h2>Days</h2>
+    </div>
+    <div class="col-md-2">
+        @Html.ActionLink("New Day", "Create", "ClientDays", new { homePhone = Model.HomePhone, date = DateTime.Now }, new { @class = "btn btn-primary" })
+    </div>
+</header>
+
+<main class="">
+    <table id="days-table" class="table table-bordered table-striped table-hover">
+        <thead class="text-center">
+            <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Price</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var day in Model.Days)
+            {
+
+                <tr onclick="window.location = '/clientDays/details/' + @day.Id">
+                    <td>@day.StartTime.ToLongDateString()</td>
+                    <td>@day.Time.ToTimeString()</td>
+                    <td>@day.Price</td>
+                    <td>
+
+                        @Html.ActionLink(" ", "Edit", "ClientDays", new { id = day.Id }, new { @class = "glyphicon glyphicon-pencil" })&nbsp;&nbsp;
+                        @Html.ActionLink(" ", "Delete", "ClientDays", new { id = day.Id }, new { @class = "glyphicon glyphicon-trash" })
+                    </td>
+                </tr>
+
+            }
+        </tbody>
+    </table>
+
+</main>

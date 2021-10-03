@@ -1,0 +1,11 @@
+﻿@model Lhuvin.Billing.Models.ClientPrice
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+@Model.ClientId <br /> @Model.Client.FirstName <br /> @Model.Client.LastName<br />
+
+@Model.PerHour.Description <br /> @Model.PerHour.Price

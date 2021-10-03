@@ -1,0 +1,97 @@
+﻿@model Lhuvin.Models.Client
+    <header class="row page-header">
+        <div class="col-md-10">
+            <h2>Details</h2>
+        </div>
+        <div class="col-md-2">
+            @Html.ActionLink("Edit Client", "EditClient", "Clients", new { id = Model.Id }, new { @class = "btn btn-primary" })
+        </div>
+    </header>
+    <div class="row">
+
+        <div class="col-md-6">
+            <h4 class="page-header">קאנטאקט אינפא</h4>
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(c => c.HomePhone)
+                </dt>
+                <dd dir="ltr" style="float:right">
+                    @Html.DisplayFor(c => c.HomePhone)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(c => c.FathersCellNumber)
+                </dt>
+                <dd dir="ltr" style="float:right">
+                    @Html.DisplayFor(c => c.FathersCellNumber)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(c => c.MothersCellNumber)
+                </dt>
+                <dd dir="ltr" style="float:right">
+                    @Html.DisplayFor(c => c.MothersCellNumber)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(c => c.Address)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(c => c.Address)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(c => c.Unit)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(c => c.Unit)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(c => c.City)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(c => c.City)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(c => c.State)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(c => c.State)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(c => c.Zip)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(c => c.Zip)
+                </dd>
+            </dl>
+        </div>
+        <div class="col-md-6">
+            <h4 class="page-header">פערסאנעל אינפא</h4>
+            <dl class="dl-horizontal">
+
+                <dt>
+                    @Html.DisplayNameFor(c => c.FatherName)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(c => c.FatherName)
+                </dd>
+                <dt>
+                <dt>
+                    @Html.DisplayNameFor(c => c.DOB)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(c => c.DOB)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(c => c.Age)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(c => c.Age)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(c => c.Grade)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(c => c.Grade)
+                </dd>
+            </dl>
+
+        </div>
+    </div>

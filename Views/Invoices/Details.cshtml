@@ -1,0 +1,168 @@
+﻿@model Lhuvin.Billing.Models.Invoice
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="toPrint">
+    <header class="page-header">
+        <h2>Invoice <span class="small">@Model.Id</span></h2>
+
+        <div class="row">
+            <dl class="dl-horizontal col-md-4" data-toggle="tooltip" title="click for details" onclick="window.location='/Clients/Details/@Model.Client.Id'">
+                <dt>
+                    @Html.DisplayName("Name")
+                </dt>
+                <dd>
+                    @Html.DisplayFor(c => c.Client.FirstName)
+                    @Html.DisplayFor(c => c.Client.LastName)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(c => c.Client.FatherName)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(c => c.Client.FatherName)
+                </dd>
+            </dl>
+            <div class="col-md-8">
+                <div class="btn-group-lg">
+                    <button type="button" class="btn btn-default" id="print"><span class="glyphicon glyphicon-print"></span></button>
+
+                </div>
+            </div>
+        </div>
+
+    </header>
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(c => c.StartDate)
+        </dt>
+        <dd>
+            @Model.StartDate.ToShortDateString()
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(c => c.EndDate)
+        </dt>
+        <dd>
+            @Model.EndDate.ToShortDateString()
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(c => c.BillingDate)
+        </dt>
+        <dd>
+            @Model.BillingDate.ToShortDateString()
+        </dd>
+    </dl>
+    @if (Model.Detaild == true)
+    {
+        foreach (var week in Model.Weeks())
+        {
+            <table class="table table-bordered table-striped">
+                <caption class="caption">@week.Parsha.Name</caption>
+                <thead class="text-center">
+                    <tr>
+                        <th></th>
+                        <th>צייט</th>
+                        <th>שעות</th>
+                        <th>פון - ביז</th>
+                        <th>ריפארט</th>
+                        <th>פרייז</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var day in week.Days.OrderBy(d => d.StartTime))
+                    {
+
+                        <tr>
+                            <td width="3%">
+                                <a class="glyphicon glyphicon-pencil text-primary btn-edit" data-toggle="modal" data-target="#editModel" title="Edit"
+                                   date="@day.StartTime" data-day="@Lhuvin.Billing.Models.ParshaWeek.GetDayInParsha(day.StartTime)" data-startTime="@day.StartTime.TimeOfDay" data-endTime="@day.EndTime.TimeOfDay" data-breakDown="@day.BreakDown" day-id="@day.Id">
+
+                                </a>
+                                <a class="glyphicon glyphicon-trash text-danger btn-delete" data-toggle="modal" data-target="#deleteModal" title="Delete" day-id="@day.Id">
+                                </a>
+                            </td>
+                            <td id="day">
+                                <span hidden>@Lhuvin.Billing.Models.ParshaWeek.GetDayInParsha(day.StartTime)</span>
+
+                                @Lhuvin.Billing.Models.ParshaWeek.GetDayInParsha(day.StartTime).Split(' ')[0]
+                            </td>
+                            <td>
+                                <span>@day.Time.ToTimeString()</span>
+                            </td>
+                            <td>
+                                <span dir="ltr" class="text-left">@day.StartTime.ToShortTimeString() - @day.EndTime.ToShortTimeString()</span>
+                            </td>
+
+                            <td style="width:40%; white-space: pre-line">@day.BreakDown</td>
+                            <td>@day.Price.ToString("c")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    }
+    else
+    {
+        <h4>Weeks</h4>
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Parsha</th>
+                    <th>Amount Of Days</th>
+                    <th>Total Time</th>
+                    <th>Sum</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var week in Model.Weeks().OrderBy(w => w.StartDate))
+                {
+                    <tr data-toggle="tooltip" data-placement="top" title="click for details" onclick="window.location='/ClientWeeks/Details/@week.Id'">
+
+                        <td>@Html.DisplayFor(w => week.Parsha.Name)</td>
+                        <td>@Html.DisplayFor(w => week.AmountOfDays)</td>
+                        <td>
+                            @week.Days.Select(d => d.Time).Sum().ToTimeString()
+                        </td>
+                        <td>@Html.DisplayFor(w => week.Sum)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayName("Previous Balance")
+        </dt>
+        <dd>
+            @{
+                var previousBalance = Model.Client.Balance.Balance - Model.Subtotal;
+            }
+            @previousBalance
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(i => i.Subtotal)
+        </dt>
+        <dd>
+            @Html.DisplayFor(c => c.Subtotal)
+        </dd>
+        <dt>
+            @Html.DisplayName("Total Balance")
+        </dt>
+        <dd>
+            @Html.DisplayFor(c => c.Client.Balance.Balance)
+        </dd>
+    </dl>
+</div>
+
+<script defer>
+    document.getElementById("print").onclick = function () {
+        var printButton = document.getElementById("print");
+        var printButtonParent = printButton.parentNode
+        printButtonParent.removeChild(printButton);
+        window.print();
+        printButtonParent.appendChild(printButton)
+    }
+   
+</script>

@@ -1,0 +1,92 @@
+﻿@model Lhuvin.Billing.Models.ClientWeek
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="page-header">
+    <h2>Details</h2>
+    <div class="row">
+        <dl class="dl-horizontal col-md-4" data-toggle="tooltip" title="click for details" onclick="window.location='/Clients/Details/@Model.Client.Id'">
+            <dt>
+                @Html.DisplayName("Name")
+            </dt>
+            <dd>
+                @Html.DisplayFor(c => c.Client.FirstName)
+                @Html.DisplayFor(c => c.Client.LastName)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(c => c.Client.FatherName)
+            </dt>
+            <dd>
+                @Html.DisplayFor(c => c.Client.FatherName)
+            </dd>
+        </dl>
+        <div class="col-md-8">
+            @Html.ActionLink("Add Day", "Create", "ClientDays",
+           new { id = Model.ClientId, date = Model.Days.LastOrDefault().StartTime.AddDays(1) },
+           new { @class = "btn btn-primary" })
+        </div>
+    </div>
+
+</header>
+<dl class="dl-horizontal">
+
+    <dt>
+        @Html.DisplayNameFor(c => c.Parsha)
+    </dt>
+    <dd>
+        @Html.DisplayFor(c => c.Parsha.Name)
+    </dd>
+    <dt>
+        @Html.DisplayNameFor(c => c.StartDate)
+    </dt>
+    <dd>
+        @Model.StartDate.ToShortDateString()
+    </dd>
+    <dt>
+        @Html.DisplayNameFor(c => c.EndDate)
+    </dt>
+    <dd>
+        @Model.EndDate.ToShortDateString()
+    </dd>
+    <dt>
+        @Html.DisplayNameFor(c => c.Sum)
+    </dt>
+    <dd>
+        @Html.DisplayFor(c => c.Sum)
+    </dd>
+    <dt>
+        @Html.DisplayNameFor(c => c.OnBalance)
+    </dt>
+    <dd>
+        @Html.DisplayFor(c => c.OnBalance)
+    </dd>
+</dl>
+<table class="table table-bordered table-striped table-hover">
+    <thead class="text-center">
+        <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var day in Model.Days)
+        {
+
+            <tr style="cursor: pointer;" data-toggle="tooltip" data-placement="top" title="click for details" onclick="window.location='/ClientDays/Details/@day.Id'">
+                <td>@day.StartTime.ToLongDateString()</td>
+                <td>@day.Time.ToTimeString()</td>
+                <td>@day.Price</td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+@if (Model.OnBalance == false)
+{
+
+    @Html.ActionLink("Add to Balance", "Update", "Balance",
+        new { id = Model.ClientId, amount = Model.Sum, weekId = Model.Id }, new { @class = "btn btn-primary"})
+}

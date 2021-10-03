@@ -1,0 +1,118 @@
+﻿@model Lhuvin.Models.Client
+<div class="row" dir="ltr">
+    <div class="col-md-12 text-left">
+        <button id="open" type="button" class="btn btn-primary" data-toggle="modal" data-target="#newCardModal">New Card</button>
+    </div>
+</div>
+
+<table class="table table-bordered table-striped  dataTable">
+    <thead>
+        <tr>
+            <th></th>
+            <th>
+                Name on Card
+            </th>
+            <th>
+                Card Number
+            </th>
+            <th>
+                Exp Date
+            </th>
+            <th>
+                Cvv
+            </th>
+            <th>
+                Zip
+            </th>
+        </tr>
+    </thead>
+    <tbody id="cards-table">
+        @foreach (var item in Model.CreditCards)
+        {
+            <tr class="card-row" card-id="@item.Id">
+                <td width="3%">
+                    @Ajax.ActionLink(" ", actionName: "Edit", controllerName: "CreditCards", routeValues: new
+               {
+                   item.Id
+               }, ajaxOptions: new AjaxOptions { HttpMethod = "get", UpdateTargetId = "editCard", InsertionMode = InsertionMode.InsertAfter, OnSuccess = "openEditModal" }, htmlAttributes: new { @class = " glyphicon glyphicon-pencil" })
+                    @Ajax.ActionLink(" ", "Delete", "CreditCards", new { item.Id }, 
+                   new AjaxOptions { HttpMethod = "get", UpdateTargetId = "deleteCard", OnSuccess = "openDeleteModal" }, new { @class = "glyphicon glyphicon-trash text-danger" })
+                </td>
+                <td class="card-name">
+                    @Html.DisplayFor(model => item.Name)
+                </td>
+                <td class="card-number">
+                    @Html.DisplayFor(modelItem => item.CardNumber)
+                </td>
+                <td class="card-exp">
+                    @Html.DisplayFor(modelItem => item.Exp)
+                </td>
+                <td class="card-cvv">
+                    @Html.DisplayFor(modelItem => item.SecurityCode)
+                </td>
+                <td class="card-zip">
+                    @Html.DisplayFor(modelItem => item.Zip)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div id="editCard"></div>
+<div id="deleteCard"></div>
+
+
+@Html.Partial("../CreditCards/CreatePartial", new Lhuvin.Billing.Models.CreditCard(Model.Id))
+
+<script defer>
+
+    function cardSaved(newCard) {
+        toastr.success("Card Saved")
+        CloseModel("#newCardModal", true)
+        $("#cards-table").append('<tr class="card-row" card-id="'
+            + newCard.Id
+            + '"><td><a class= " glyphicon glyphicon-pencil" data-ajax="true" data-ajax-method="get" data-ajax-mode="after" data-ajax-success="openEditModal" data-ajax-update="#editCard" href = "/CreditCards/Edit/' + newCard.Id + '" > '
+            + '<a class="glyphicon glyphicon-trash text-danger" data-ajax="true" data-ajax-method="get" data-ajax-mode="replace" data-ajax-success="openDeleteModal" data-ajax-update="#deleteCard" href="/CreditCards/Delete/' + newCard.Id + '"> </a>'
+            +  '</a ></td ><td class="card-name">'+ newCard.Name +'</td >'+
+            
+            "</td><td class='card-number'>" + newCard.CardNumber +
+            "</td><td class='card-exp'>" + newCard.Exp +
+            "</td><td class='card-cvv'>" + newCard.SecurityCode +
+            "</td><td class='card-zip'>" + newCard.Zip +
+            "</td></tr > ")
+    }
+    function openEditModal() {
+        $("#editCardModal").modal("show")
+        $("#editCardModal").modal("show").on('hidden.bs.modal', function () {
+            $(this).remove();
+        })
+    }
+
+    function openDeleteModal() {
+        $("#deleteCardModal").modal("show")
+        $("#deleteCardModal").modal("show").on('hidden.bs.modal', function () {
+            $(this).remove();
+        })
+    }
+
+    function cardDeleted(modal, cardId) {
+        toastr.success("Card Deleted")
+        $(modal).modal("hide")
+        $(".card-row[card-id='" + cardId + "']").remove()
+    }
+
+    function cardUpdated(form, card) {
+        toastr.success("Card Updated")
+        var cardRow = $(".card-row[card-id='" + card.Id + "']");
+        cardRow.find(".card-name").text(card.Name);
+        cardRow.find(".card-number").text(card.CardNumber);
+        cardRow.find(".card-exp").text(card.Exp);
+        cardRow.find(".card-cvv").text(card.SecurityCode);
+        cardRow.find(".card-zip").text(card.Zip);
+
+        $(form).closest(".modal").modal("hide")
+        $(form).closest(".modal").on('hidden.bs.modal', function () {
+            $(this).remove();
+        })
+    }
+</script>

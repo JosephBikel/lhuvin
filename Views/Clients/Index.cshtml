@@ -1,0 +1,279 @@
+﻿@model List<Lhuvin.Models.Client>
+@using Lhuvin.Extentions;
+@{
+    ViewBag.Title = "Index";
+}
+<style>
+    .bi {
+        text-align: center;
+        font-size: large
+    }
+    
+</style>
+<header class="page-header">
+    <h1 class="text-center">תלמידים</h1>
+</header>
+<div class="row">
+    <div class=" col-md-5" id="showEntries"></div>
+    <div class=" col-md-2">
+        @* <form id="search">
+                <input type="search" id="query" name="query" value="@ViewBag.query" />
+            </form>*@
+    </div>
+
+    <div class="col-md-5 text-left">
+        <a href="~/Clients/NewClient" class="btn btn-primary">נייע תלמיד</a>
+    </div>
+</div>
+<table id="clientsTable" class="table table-bordered table-hover table-striped" style="height:100px">
+    <thead>
+        <tr>
+            <th></th>
+            <th>נאמען</th>
+            <th>
+                טאטע׳ס נאמען
+            </th>
+            <th>היים נאמבער</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var client in Model)
+        {
+            <tr class="tr " title="dblclick for details" ondblclick="window.location = '/clients/details/' + @client.Id">
+                <td width="3%" class="clientName ed-del">
+
+                    @Html.ActionLink(" ", "EditClient", new { id = client.Id }, new { @class = "glyphicon glyphicon-pencil text-primary", title = "Edit" })
+
+                    <a class="glyphicon glyphicon-trash text-danger btn-delete" title="Delete" client-id="@client.Id">
+                    </a>
+                </td>
+                <td id="name">
+                    @Html.DisplayFor(c => client.LastName)
+                    @Html.DisplayFor(c => client.FirstName)
+                </td>
+                <td class="align-middle">@Html.DisplayFor(c => client.FatherName)</td>
+                <td><span dir="ltr"> @Html.DisplayFor(c => client.HomePhone)</span></td>
+                <td class="text-center" scope="col">
+                    <a title="reports" class="openReportsDialog" client-name="@client.FirstName @client.LastName" client-id="@client.Id">
+                        <span class="bi bi-bar-chart-line"></span>
+                    </a>
+                </td>
+                <td class="text-center" scope="col">
+                    <a id="btnNd_@client.Id" class="btnNewDay" title="new day" data-toggle="modal" data-target="#createDayModel" data-backdrop="static" client-name="@client.FirstName @client.LastName" client-id="@client.Id">
+                        <span class="bi bi-calendar-day " style=" text-decoration: none;margin-top:auto; margin-bottom:auto;"></span>
+                    </a>
+                </td>
+                <td class="text-center" scope="col">
+                    <a title="new payment" data-toggle="modal" data-target="#createPaymentModal" data-backdrop="static" client-name="@client.FirstName @client.LastName" client-id="@client.Id">
+                        <span class="bi bi-cash-stack"></span>
+                    </a>
+                </td>
+                <td class="text-center" scope="col">
+                    <a title="new day" data-toggle="modal" data-target="#createInvoiceModal" data-backdrop="static" client-name="@client.FirstName @client.LastName" client-id="@client.Id">
+                        <span class="bi bi-receipt"></span>
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<div class="hidden">
+    <button id="open" type="button" data-toggle="modal" data-target="#myModal">Open Modal</button>
+
+</div>
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        @using (Html.BeginForm("Delete", "Clients"))
+        {
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3 class="modal-title text-center">Delete</h3>
+                </div>
+                <div class="modal-body" dir="ltr">
+                    <h3 class="text-danger">Are you sure you want to delete this Client?</h3>
+                    <h4 id="clientName" class="text-center"></h4>
+
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="id" />
+
+
+                </div>
+                <div class="modal-footer">
+                    <button id="close" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <input type="submit" value="Delete" class="btn btn-danger" />
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@Html.Partial("../ClientDays/CreatePartial", new Lhuvin.Billing.ViewModels.CreateClientDayViewModel(DateTime.Now))
+@Html.Partial("../ParshaWeeks/CreatePartial", new Lhuvin.Billing.Models.ParshaWeek())
+@Html.Partial("../Invoices/CreatePartial")
+@Html.Partial("../Goals/ChangePartial", new Lhuvin.Reports.Modals.ClientGoal())
+@Html.Partial("../Payments/CreatePartial", new Lhuvin.Billing.Models.Payment())
+
+
+
+
+@Html.Partial("../CreditCards/CreatePartial", new Lhuvin.Billing.Models.CreditCard())
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script defer>
+
+        $("#clientsTable").DataTable({ "oLanguage": { "sSearch": "" }, ordering: false });
+        $("input[type = 'search']").focus();
+        /*$("#clientsTable_filter").parent().remove()
+        var filter_length = $("#clientsTable_length")
+        filter_length.closest(".row").remove()
+        $("#showEntries").append(filter_length)
+        var queryInput = document.getElementById('query');
+        var value = queryInput.value;
+        queryInput.value = "";
+        queryInput.value = value;
+
+        document.getElementById('query').oninput =
+            function () {
+                $('#search').submit()
+            }*/
+
+        $(".btn-delete").on("click", function () {
+            $("#id").val($(this).attr("client-id"))
+            $("#clientName").text($(this).closest(".tr").find("#name").text())
+
+            $("#open").click()
+        })
+
+
+        $("#createDayModel").on("show.bs.dropdown", function () {
+            var model = $("#createDayModel")
+            var clientId = model.find("#clientId").val();
+
+            $.ajax({
+                type: "GET",
+                url: '/ClientEval/GetNegativeDetails/' + clientId,
+                data: { header: model.find("#goal").text() },
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (details) {
+                    console.log(details)
+                    $.each(details, function (index, detail) {
+                        $("#goalDetails").append("<li>" + detail.name + "</li>")
+                    })
+                }
+            })
+            $("#goalDetailsDrop").css({
+                position: "absolute",
+                right: $("#goal").position().left + "px"
+            })
+            $("#goalDetails li").attr("dir", "rtl")
+        })
+
+        $("#createDayModel").on('hide.bs.dropdown', function () {
+            $("#goalDetails").empty()
+        })
+
+        $("#createDayModel").on("hidden.bs.modal", function () {
+            $("#tbody").empty()
+            $("#reportsDialog").dialog("close")
+
+        })
+
+        var newParshaOption = $("#ddlParsha").append('<option value = "new">נייע פרשה</option>')
+        $("#ddlParsha").change(function () {
+            if (this.value == "new") {
+                $("#createParshaModal").modal("show")
+            }
+        })
+        $("#createParshaModal form").on("submit", function (e) {
+            e.preventDefault();
+            var week = {};
+            week.Name = $(this).find("input[name = 'Name']").val()
+            week.StartDate = $(this).find("input[name = 'StartDate']").val()
+            week.EndDate = $(this).find("input[name = 'EndDate']").val()
+
+            $.ajax({
+                type: "POST",
+                url: '/ParshaWeeks/Create',
+                data: JSON.stringify(week),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    var newOption = $('#ddlParsha').append('<option selected>' + data.Name + '</option > ');
+                    CloseModel("#createParshaModal");
+                    week = {}
+                }
+            })
+        })
+
+        function SaveForLater(modelId) {
+            var model = $(modelId);
+            var form = model.find("form").get(0)
+            var formData = new FormData(form);
+            UnFinished[model.find("#clientId").val()] = formData;
+            model.modal("hide")
+            form.reset();
+        }
+
+        $("#createPaymentModal").on("show.bs.modal", function (e) {
+            var clientId = fillModal(this, e.relatedTarget)
+            $.ajax({
+                method: "get",
+                url: "/CreditCards/GetCards/" + clientId,
+                success: function (cards) {
+                    $.each(cards, function (index, card) {
+                        var cardInfo = {
+                            CardNumber: card.CardNumber,
+                            Exp: card.Exp,
+                            SecurityCode: card.SecurityCode,
+                            Zip: card.Zip
+                        }
+                        var displayCard = "<div>"
+                        $.each(cardInfo, function (name, val) {
+                            displayCard += "<strong>" + name + "</strong>: " + "<span>" + val + "</span><br/>"
+                        })
+                        displayCard += "<input type ='hidden' class ='card-id' value ='" + card.Id + "'/> </div>"
+                        $(".credit-cards").append("<li class='divider'></li><li><a><details><summary>" + card.Name + "</summary><span class = 'cardDetails'>" + displayCard + "</span></details></a></li>")
+                        $(".cardDetails").click(function (e) {
+                            $(this).closest("form").find("input[name='CardId']").val($(this).find(".card-id").val())
+                            $(this).closest("li > a").addClass("btn-primary")
+                        })
+                    })
+                }
+            })
+        })
+
+        $(".payment-type-dd li").click(function (e) {
+            $(this).closest(".dropdown").find(".dropdown-toggle").html('<span class="caret"></span> ' + $(this).text())
+            $("span[for='type']").text("")
+            $(this).closest("form").find("input[type='hidden'][name='type']").val($(this).text())
+            if ($(this).text() == "CreditCard") {
+                e.stopPropagation()
+                $(this).closest(".dropdown").siblings(".new-card-charge").find(".dropdown-toggle").dropdown("toggle")
+
+            }
+            else if ($(this).text() == "Check") {
+                e.stopPropagation()
+                $(this).closest(".dropdown").siblings(".new-tpcheck").find(".dropdown-toggle").dropdown("toggle")
+            }
+        })
+        $(".charge-menu").click(function (e) {
+            e.stopPropagation();
+        })
+
+        function paymentSaved(form, payment) {
+            toastr.success("Payment Saved");
+            CloseModel("#createPaymentModal", true)
+        }
+
+
+    </script>
+
+}

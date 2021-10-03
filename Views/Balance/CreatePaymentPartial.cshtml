@@ -1,0 +1,34 @@
+﻿@model Lhuvin.Billing.Models.Payment
+
+    
+<td width="15%" class="new-payment_@Model.ClientId">
+    @Html.HiddenFor(p => p.ClientId, new { form = "paymentForm_" + Model.ClientId })
+    <input type="hidden" name="type" required value="@ViewBag.type" form="paymentForm_@Model.ClientId" />
+    <div class="dropdown payment-type-dd">
+        <button class="btn btn-primary form-control dropdown-toggle type-dd_@Model.ClientId" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            <span class="caret"></span>
+            Select Type
+        </button>
+        <ul class="dropdown-menu payment-type-dd" aria-labelledby="dropdownMenu1">
+            @foreach (var type in Enum.GetValues(typeof(Lhuvin.Billing.Models.PaymentType)).Cast<Lhuvin.Billing.Models.PaymentType>().ToList())
+            {
+                <li><a>@type</a></li>
+            }
+        </ul>
+    </div>
+    <div dir="ltr" class="dropdown new-card-charge keepopen">
+        <button data-toggle="dropdown" class="dropdown-toggle hidden"></button>
+        @Html.Partial("../CreditCardCharges/CreatePartial", new Lhuvin.Billing.Models.CreditCardCharge(Model.ClientId))
+    </div>
+    <div class="dropdown new-tpcheck">
+        <button data-toggle="dropdown" class="dropdown-toggle hidden"></button>
+        @Html.Partial("../Payments/TPCheckPartial", new Lhuvin.Billing.Models.TPCheck())
+    </div>
+</td>
+    <td width="15%" class="new-payment_@Model.ClientId">
+
+        @Html.TextBoxFor(p => p.Amount, new { dir = "ltr", id = "", @class = "form-control", form = "paymentForm_" + Model.ClientId })
+        @Html.ValidationMessageFor(p => p.Amount, "", new { @class = "text-danger", form = "paymentForm_" + Model.ClientId })
+        <input type="submit" value="s" form="paymentForm_@Model.ClientId" />
+    </td>
+

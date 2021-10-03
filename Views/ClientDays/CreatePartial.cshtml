@@ -1,0 +1,150 @@
+﻿@model Lhuvin.Billing.ViewModels.CreateClientDayViewModel
+    <style>
+    </style>
+<div class="modal fade" id="createDayModel" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="CloseModel('#createDayModel', true)" data-dismiss="modal">&times;</button>
+
+                <h3 class="modal-title text-center">נייע טאג</h3>
+            </div>
+            @using (Ajax.BeginForm("Create",controllerName: "ClientDays", ajaxOptions: new AjaxOptions { HttpMethod = "post", UpdateTargetId = "cdEx", OnSuccess = " CloseModel('#createDayModel')" }))
+            {
+
+                var db = new Lhuvin.Models.ApplicationDbContext();
+
+                <div class="modal-body">
+                    <div class="text-center">
+                        <h4 class="ModelClientName"></h4>
+                        <div style="font-size: 18px;" class="dropdown show">
+                            <a class="glyphicon glyphicon-edit" data-toggle="modal" data-target="#changeGoalModal" data-backdrop="static"></a>
+                            <strong>פאָקוס</strong>:
+                            <span id="goal" class="dropdown-toggle" href="#" role="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                            <div id="goalDetailsDrop" class="dropdown-menu"  aria-labelledby="dropdownMenuReference">
+                                <ul id="goalDetails" style="padding-left:5px">
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <br />
+                    <span class="exc text-danger text-center" id="cdEx"></span>
+                    @Html.HiddenFor(m => m.ClientId, new { id = "clientId" })
+                    <div class="form-horizontal">
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="form-group">
+                                <div class="col-md-10">
+                                    <div class="col-md-4">
+                                        @Html.LabelFor(m => m.Day, new { @class = "control-label" })
+                                        @Html.DropDownListFor(m => m.Day, new SelectList(Enum.GetValues(typeof(Lhuvin.Billing.Models.ParshaWeek.DayBHL)).Cast<Lhuvin.Billing.Models.ParshaWeek.DayBHL>(), Model.Day),
+                                                new { @class = "form-control text-center" })
+                                    </div>
+                                    <div class="col-md-4">
+                                        @Html.LabelFor(m => m.Parsha, new { @class = "control-label" })
+                                        @Html.DropDownListFor(m => m.Parsha, new SelectList(db.ParshaWeeks.AsEnumerable().Where(p => p.StartDate > DateTime.Now.AddDays(-30)).Select(p => p.Name), Model.Parsha), "select parsha",
+                                                new { @class = "form-control text-center", id = "ddlParsha" })
+                                    </div>
+                                    <div class="col-md-4">
+                                        @Html.LabelFor(m => m.Year, new { @class = "control-label" })
+                                        @Html.DropDownListFor(m => m.Year, new SelectList(db.ParshaWeeks.AsEnumerable().Select(p => p.Year).Distinct(), Model.Year),
+                                                new { @class = "form-control text-center" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="col-md-3"></div>
+                                <div class="col-md-3">
+                                    @Html.LabelFor(m => m.StartTime, new { @class = "control-label text-center" })
+                                    @Html.TextBoxFor(m => m.StartTime, new { @class = "form-control ", type = "time"})
+
+                                </div>
+                                <div class="col-md-3">
+                                    @Html.LabelFor(m => m.EndTime, new { @class = "control-label text-center" })
+                                    @Html.TextBoxFor(m => m.EndTime, new { @class = "form-control ", type = "time" })
+
+                                </div>
+                                <div class="col-md-3"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-6">
+                                @Html.LabelFor(m => m.PriceId,"פרייז", new { @class = "control-label text-center" })
+                                @Html.DropDownListFor(d => d.PriceId, new SelectList(db.PricePerHours.Where(p => p.Public == true).Select(
+                                p => new
+                                {
+                                    Id = p.Id,
+                                    Description = p.Price + " - " + p.Description
+                                })
+                                , "Id", "Description",
+                            Model.PriceId), new { @class = "form-control" })
+                            </div>
+                            <div class="col-md-3"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-6">
+                                @Html.LabelFor(m => m.BreakDown, new { @class = "control-label text-center" })
+                                @Html.TextAreaFor(m => m.BreakDown, new { @class = "form-control", rows = "4" })
+                            </div>
+                            <div class="col-md-3"></div>
+                        </div>
+                    </div>
+                 </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="CloseModel('#createDayModel', true)" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-info" onclick="SaveForLater('#createDayModel')">Later</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="openReportsDialog btn btn-primary">Reports</button>
+                </div>
+              }
+        </div>
+    </div>
+</div>
+@Html.Partial("../DailyReports/ReportsPartial")
+
+<script defer>
+    $("#createDayModel").on("show.bs.modal", function (e) {
+
+        var clientId = fillModal(this, e.relatedTarget)
+
+        var refill = UnFinished[clientId];
+        if (refill) {
+            var keys = refill.keys()
+            var values = refill.values()
+            $('#createDayModel form input, #createDayModel form select, #createDayModel form textarea').each(
+                function (index) {
+                    var input = $(this);
+                    input.val(refill.get(input.attr("name")))
+                }
+            );
+        }
+
+        $.ajax({
+            type: "GET",
+            url: '/goals/getgoal/' + clientId,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (goal) {
+                $("#createDayModel").find("#goal").text(goal.Goal)
+            }
+        })
+        $.ajax({
+            type: "GET",
+            url: '/price/GetClientPrice/' + clientId,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (price) {
+                var select = $("select[name='PriceId']")
+                if (!price.public)
+                    select.append("<option value='" + price.Id + "'>" + price.Price + " - " + price.Description + "</option>")
+                select.find("option[value='" + price.Id + "']").prop("selected", true)
+            }
+        })
+    })
+</script>

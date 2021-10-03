@@ -1,0 +1,59 @@
+﻿@model Lhuvin.Billing.ViewModels.CreateInvioceViewModel
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <header class="page-header">
+        <h2>New Invioce</h2>
+        <div class="row">
+            <dl class="dl-horizontal col-md-4" data-toggle="tooltip" title="click for details" onclick="window.location='/Clients/Details/@Model.Client.Id'">
+                <dt>
+                    @Html.DisplayName("Name")
+                </dt>
+                <dd>
+                    @Html.DisplayFor(c => c.Client.FirstName)
+                    @Html.DisplayFor(c => c.Client.LastName)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(c => c.Client.FatherName)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(c => c.Client.FatherName)
+                </dd>
+            </dl>
+            <div class="col-md-8"></div>
+        </div>
+    </header>
+<h4>Please select the weeks for the invoice</h4>
+
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(m => m.Client.Id)
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <td></td>
+                <th>Parsha</th>
+                <th>Amount Of Days</th>
+                <th>Sum</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for(var i = 0; i < Model.Weeks.Count(); i++)
+            {
+                
+                <tr class="week">
+                    <td><input type="checkbox" name="weeks[@i].Billed" value="true"/>
+                    <input type="hidden" name="weeks[@i].Id" value="@Model.Weeks.ElementAt(i).Id" /></td>
+                    <td>@Model.Weeks.ElementAt(i).Parsha.Name</td>
+                    <td>@Model.Weeks.ElementAt(i).AmountOfDays</td>
+                    <td>@Model.Weeks.ElementAt(i).Sum</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="btn-group-lg col-md-offset-11">
+        <input type="submit" value="Submit" class="btn btn-primary" />
+    </div>
+}

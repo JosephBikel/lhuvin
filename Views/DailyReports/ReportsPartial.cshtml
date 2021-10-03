@@ -1,0 +1,90 @@
+﻿<div id="reportsDialog" title="ריפארטס">
+    <h4 class="text-center" id="reportsDialogClientName"></h4>
+
+
+    @using (Ajax.BeginForm("GetReports", "DailyReports", new AjaxOptions { HttpMethod = "GET", OnSuccess = "LoadReports" }))
+    {
+        <div class=" form-horizontal">
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            @Html.Label("from", "פין", new { @class = "control-label" })
+                            @Html.TextBox("from", null, new { @class = "form-control" })
+                        </div>
+                        <div class="col-md-6">
+                            @Html.Label("to", "ביז", new { @class = "control-label" })
+                            @Html.TextBox("to", null, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+                @Html.Hidden("id")
+            </div>
+
+            <button type="submit" id="getReportsSubmit" class="btn btn-primary">Enter</button>
+        </div>
+
+    }
+    <br />
+    <div id="table">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <td>טאג</td>
+                    <td>ריפארט</td>
+                </tr>
+            </thead>
+            <tbody id="reportstbody">
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<script defer>
+    $("#reportsDialog").dialog({
+        autoOpen: false,
+        maxHeight: 650,
+        width: 350,
+        position: { my: "right top", at: "right top" },
+        close: function () {
+            $(this).find("form").trigger("reset");
+            $("#reportstbody").empty()
+        }
+    })
+
+    $(".openReportsDialog").on('click', function (e) {
+        $(".ui-dialog").css({
+            zIndex: '1060',
+        });
+        $("#reportsDialog").dialog("open")
+        var clientId = $("#clientId").val()
+        if (clientId == 0) {
+            clientId = this.getAttribute("client-id")
+            $("#reportsDialogClientName").text(this.getAttribute("client-name"))
+        }
+
+        $("#reportsDialog").find("input[name = 'id']").val(clientId);
+        $.ajax({
+            type: "GET",
+            url: "/DailyReports/GetReports/" + clientId,
+            success: function (reports) {
+                $("#reportstbody").empty()
+                LoadReports(reports);
+                const firstDate = reports[reports.length - 1].Date;
+                const lastDate = reports[0].Date;
+                const firstDateString = firstDate.Day + "/" + firstDate.Parsha + "/" + firstDate.Year.replace("תש", "").replace("תת", "")
+                const lastDateString = lastDate.Day + "/" + lastDate.Parsha + "/" + lastDate.Year.replace("תש", "").replace("תת", "")
+
+                const form = $("#reportsDialog form");
+                form.find("input[name = 'from']").val(firstDateString)
+                form.find("input[name = 'to']").val(lastDateString)
+            }
+        })
+    })
+
+    $("#reportsModel").on("hidden.bs.modal", function () {
+        $(this).find("form").trigger("reset");
+        $("#reportstbody").empty()
+    })
+
+</script>

@@ -1,0 +1,27 @@
+﻿@model Lhuvin.Models.Client
+<div class="row" dir="ltr">
+    <div class="col-md-12 text-left">
+        @Html.ActionLink("New Invoice", "Create", "Invoices", new { id = Model.Id }, new { @class = "btn btn-primary" })
+    </div>
+</div>
+
+<main>
+    <table class="table table-bordered table-striped table-hover dataTable">
+        <thead>
+            <tr>
+                <th>Billing Date</th>
+                <th>Price Sum</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var invoice in Model.Invoices.OrderByDescending(i => i.BillingDate))
+            {
+                <tr data-toggle="tooltip" data-placement="top" title="click for details" onclick="window.location='/Invoices/Details/@invoice.Id'">
+
+                    <td><span dir="ltr">@Html.DisplayFor(w => invoice.BillingDate)</span></td>
+                    <td>@Html.DisplayFor(w => invoice.Subtotal)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</main>

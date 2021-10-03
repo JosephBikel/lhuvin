@@ -1,0 +1,35 @@
+﻿@model Lhuvin.Models.Client
+
+<header class="row page-header">
+    <div class="col-md-10">
+        <h2>Credit Card Charges</h2>
+    </div>
+    <div class="col-md-2">
+        @Html.ActionLink("New Carge", "Create", "CreditCardCharges", new { id = Model.Id }, new { @class = "btn btn-primary" })
+    </div>
+</header>
+
+<main class="">
+    <table class="table table-bordered table-striped">
+        <thead class="text-center">
+            <tr>
+                <th>Date</th>
+                <th>Card Ending</th>
+                <th>Amount</th>
+                <th>Approved</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var charge in Model.CreditCards.SelectMany(c => c.Charges))
+            {
+
+                <tr>
+                    <td>@charge.Date</td>
+                    <td>@charge.Card.CardNumber.Substring(charge.Card.CardNumber.Length - 4)</td>
+                    <td>@charge.Amount</td>
+                    <td>@charge.Approved</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</main>

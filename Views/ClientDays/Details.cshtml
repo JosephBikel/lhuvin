@@ -1,0 +1,70 @@
+﻿@model Lhuvin.Billing.Models.ClientDay
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+    <header class="row page-header">
+        <h2>Details</h2>
+            <div class="col-md-10" data-toggle="tooltip" title="click for details" onclick="window.location='/Clients/Details/@Model.Client.Id'">
+                <dl class="dl-horizontal">
+                    <dt>
+                        @Html.DisplayName("Name")
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(c => c.Client.FirstName)
+                        @Html.DisplayFor(c => c.Client.LastName)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(c => c.Client.FatherName)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(c => c.Client.FatherName)
+                    </dd>
+                </dl>
+            </div>
+            
+            <div class="col-md-2">
+                @Html.ActionLink("New Day", "Create", "ClientDays", new { id = Model.ClientId, date = Model.StartTime.AddDays(1) }, new { @class = "btn btn-primary" })
+            </div>
+    </header>
+
+<main>
+    <h4>
+        @Lhuvin.Billing.Models.ParshaWeek.GetDayInParsha(Model.StartTime)
+    </h4>
+    <br />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(c => c.StartTime)
+        </dt>
+        <dd>
+            @Model.StartTime.ToShortTimeString()
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(c => c.EndTime)
+        </dt>
+        <dd>
+            @Model.EndTime.ToShortTimeString()
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(c => c.Time)
+        </dt>
+        <dd>
+            @Model.Time.ToTimeString()
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(c => c.Price)
+        </dt>
+        <dd>
+            @Html.DisplayFor(c => c.Price)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(c => c.BreakDown)
+        </dt>
+        <dd>
+            @Html.DisplayFor(c => c.BreakDown)
+        </dd>
+    </dl>
+</main>
+
+

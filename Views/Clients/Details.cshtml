@@ -1,0 +1,158 @@
+﻿@model Lhuvin.Models.Client
+@{
+    ViewBag.Title = "ClientDetails";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header text-center">
+    <h2>@Model.FirstName @Model.LastName</h2>
+    <h4>
+    <strong>@Html.DisplayNameFor(m => m.Balance):</strong>
+    @Model.Balance.Balance.ToString("c")</h4>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class=" col-md-1"></div>
+        <div style="border:solid 1px;border-color:lightgrey; padding:10px" class="col-md-4">
+            <strong>@Html.DisplayNameFor(c => c.FatherName):</strong>
+            @Html.DisplayFor(c => c.FatherName)
+        </div>
+        <div style="border:solid 1px;border-color:lightgrey; padding:10px" class="col-md-3">
+            <strong>@Html.DisplayNameFor(c => c.DOB):</strong>
+            @Html.DisplayFor(c => c.DOB)
+        </div>
+        <div style="border:solid 1px;border-color:lightgrey; padding:10px" class="col-md-2">
+            <strong>@Html.DisplayNameFor(c => c.Age):</strong>
+            @Html.DisplayFor(c => c.Age)
+        </div>
+        <div style="border:solid 1px;border-color:lightgrey; padding:10px" class="col-md-1">
+            <strong>@Html.DisplayNameFor(c => c.Grade):</strong>
+            @Html.DisplayFor(c => c.Grade)
+        </div>
+        <div class=" col-md-1"></div>
+    </div>
+    <div class="row">
+        <div class=" col-md-1"></div>
+        <div style="border:solid 1px;border-color:lightgrey; padding:10px" class="col-md-4">
+            <strong>@Html.DisplayNameFor(c => c.Address):</strong>
+            @Html.DisplayFor(c => c.Address)
+        </div>
+        <div style="border:solid 1px;border-color:lightgrey; padding:10px" class="col-md-2">
+            <strong>@Html.DisplayNameFor(c => c.City):</strong>
+            @Html.DisplayFor(c => c.City)
+        </div>
+        <div style="border:solid 1px;border-color:lightgrey; padding:10px" class="col-md-2">
+            <strong>@Html.DisplayNameFor(c => c.State):</strong>
+            @Html.DisplayFor(c => c.State)
+        </div>
+        <div style="border:solid 1px;border-color:lightgrey; padding:10px" class="col-md-2">
+            <strong>@Html.DisplayNameFor(c => c.Zip):</strong>
+
+            @Html.DisplayFor(c => c.Zip)
+        </div>
+        <div class=" col-md-1"></div>
+    </div>
+</div>
+<br />
+<div class="row mx-5">
+    <div class="col-md-3">
+        <div class="box panel panel-primary">
+            <div class="panel-body">
+                <strong>
+                    @Html.DisplayNameFor(c => c.HomePhone):
+                </strong>
+                <span dir="ltr">
+                    @Html.DisplayFor(c => c.HomePhone)
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="box panel panel-primary">
+            <div class="panel-body">
+                <strong>
+                    @Html.DisplayNameFor(c => c.FathersCellNumber):
+                </strong>
+                <span dir="ltr">
+                    @Html.DisplayFor(c => c.FathersCellNumber)
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="box panel panel-primary">
+            <div class=" panel-body">
+                <strong>
+                    @Html.DisplayNameFor(c => c.MothersCellNumber):
+                </strong>
+                <span dir="ltr">
+                    @Html.DisplayFor(c => c.MothersCellNumber)
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="box panel panel-primary">
+            <div class="panel-body">
+                <strong>
+                    @Html.DisplayNameFor(c => c.EmailAddress):
+                </strong>
+                @Html.DisplayFor(c => c.EmailAddress)
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<br />
+<div id="tabs">
+    <ul>
+
+        <li><a href="#weeks">וואכן</a></li>
+        <li><a href="#payments">פעימענטס</a></li>
+        <li><a href="#invoices">אינוואויסעס</a></li>
+        <li><a href="#creditCards">creditCards</a></li>
+    </ul>
+    <div id="weeks">
+        @Html.Partial("../ClientWeeks/WeeksPartial", Model.Weeks.OrderByDescending(w => w.Parsha.StartDate))
+    </div>
+    <div id="invoices">
+        @Html.Partial("../Invoices/InvoicesPartial")
+    </div>
+    <div id="payments" dir="ltr">
+        @Html.Partial("../Payments/PaymentsPartial")
+    </div>
+    <div id="creditCards" dir="ltr">
+        @Html.Partial("../CreditCards/CreditCardsPartial")
+    </div>
+    @*  <div id="ccCharges">
+            @Html.Partial("CCChargesPartial")
+        </div>
+        *@
+</div>
+<br />
+<p dir="ltr">
+    <a href="/clients/index" class="btn btn-primary">
+        <span class="glyphicon glyphicon-chevron-left"></span>&nbsp; Back to List
+    </a>
+
+</p>
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+    <script defer>
+        $(function () {
+            $("#tabs").tabs()
+        });
+
+        $(".dataTable").DataTable({
+            "oLanguage": { "sSearch": "" },
+            ordering: false
+        })
+    </script>
+   
+}
+

@@ -1,0 +1,125 @@
+﻿<div class="modal fade" id="createInvoiceModal" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class=" text-center">New Invoice</h3>
+            </div>
+            @using (Ajax.BeginForm("Create", "Invoices", new AjaxOptions { HttpMethod = "POST", OnSuccess = "CloseModel('#createInvoiceModal')" }))
+            {
+                <div class="modal-body">
+                    <div class="text-center">
+                        <h4 class="ModelClientName"></h4>
+                    </div>
+
+                    <input type="hidden" name="ClientId" />
+                    <div id="createInvoiceTable">
+                        <table class="table table-bordered table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <td></td>
+                                    <td>פרשה</td>
+                                    <td>סך</td>
+                                </tr>
+                            </thead>
+                            <tbody id="createInvoiceTbody">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>סך הכל:</strong>
+                            <span id="invoiceSum" dir="ltr">0</span>
+                        </div>
+                        <div class="col-md-6" dir="ltr">
+                            <button type="button" id="markAll">Mark All</button>
+                            <button type="button" id="unmarkAll">Unmark All</button>
+                        </div>
+                    </div>
+                    
+                   
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-secondary"/>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            }
+            </div>
+    </div>
+</div>
+
+<script defer>
+    $("#createInvoiceModal").on('show.bs.modal', function (e) {
+        console.log(e.relatedTarget)
+
+        var clientId = fillModal(this, e.relatedTarget)
+        
+        $.ajax({
+            type: "GET",
+            url: "/Invoices/Create/" + clientId,
+            success: function (weeks) {
+                $.each(weeks, function (index, value) {
+                    var reportDate = value.Parsha;
+
+                    var newRow = document.createElement("tr");
+                    var checkTd = document.createElement("td")
+                    checkTd.innerHTML = "<input type = 'checkbox' name = 'Weeks[" + index + "].Billed' value ='true'/><input type = 'hidden' name = 'Weeks[" + index + "].Id' value='" + value.Id + "'/>"
+                    newRow.appendChild(checkTd);
+                    var dateTd = document.createElement("td")
+                    dateTd.innerHTML = value.Parsha;
+                    newRow.appendChild(dateTd);
+                    var reportTd = document.createElement("td");
+                    reportTd.innerHTML = value.Sum;
+                    reportTd.setAttribute("class", "sum")
+                    newRow.appendChild(reportTd)
+                    $("#createInvoiceTbody").append(newRow);
+
+                    $(newRow).click(function () {
+
+                        if ($(checkTd.firstChild).is(':checked')) {
+                            $(checkTd.firstChild).change().prop("checked", false);
+                        }
+                        else
+                            $(checkTd.firstChild).change().prop("checked", true);
+                    })
+                })
+
+                const checkBoxes = $("#createInvoiceTbody").find("input[type='checkbox']");
+
+
+                $("#markAll").click(function () {
+                    checkBoxes.change().prop("checked", true);
+                })
+
+                $("#unmarkAll").click(function () {
+                    checkBoxes.change().prop("checked", false);
+                })
+
+                $(checkBoxes).on("change", function (e) {
+                    var sum = parseInt($(this).closest("tr").find(".sum").text())
+                    console.log(sum)
+                    var invoiceSum = $("#invoiceSum")
+                    var invoiceSumText = parseInt(invoiceSum.text())
+
+                    if (!this.checked) {
+                        $(this).prop("checked", true)
+                        invoiceSumText += sum
+                    }
+                    else {
+                        $(this).prop("checked", false)
+                        invoiceSumText -= sum
+                    }
+                        
+                    console.log(invoiceSum)
+                    invoiceSum.text(invoiceSumText)
+                })
+            }
+        })
+    })
+
+    $("#createInvoiceModal").on('hidden.bs.modal', function () {
+        $("#createInvoiceTbody").empty()
+        $(this).find("form").trigger("reset")
+        $("#invoiceSum").text("0")
+    })
+</script>

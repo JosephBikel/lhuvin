@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Lhuvin.Billing.Models.ClientDay>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+    <header class="page-header">
+        <h2>Days</h2>
+    </header>
+
+<main class="">
+    <table class="table table-bordered table-striped table-hover">
+        <thead class="text-center">
+            <tr>
+                <th>Client</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var day in Model)
+            {
+                
+                <tr onclick="window.location = '/clientDays/details/' + @day.Id">
+                    <td>@day.Client.FirstName @day.Client.LastName</td>
+                    <td>@day.StartTime.ToLongDateString()</td>
+                    <td>@day.Time.ToTimeString()</td>
+                    
+                    <td>@day.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</main>
+

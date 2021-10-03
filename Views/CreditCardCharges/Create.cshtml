@@ -1,0 +1,85 @@
+﻿@model Lhuvin.Billing.ViewModels.CreateCCChargeViewModel
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="page-header">
+    <h2>New Charge</h2>
+
+    <dl class="dl-horizontal" data-toggle="tooltip" title="Click for details" onclick="window.location = '/Clients/Details/' + @Model.Client.Id">
+        <dt>
+            @Html.DisplayName("Name")
+        </dt>
+        <dd>
+            @Html.DisplayFor(c => c.Client.FirstName)
+            @Html.DisplayFor(c => c.Client.LastName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(c => c.Client.FatherName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(c => c.Client.FatherName)
+        </dd>
+    </dl>
+</header>
+
+<main class="">
+
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "newChargeForm" }))
+    {
+        @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+    <div class=" form-horizontal">
+        @Html.HiddenFor(c => c.Client.Id)
+        @Html.HiddenFor(c => c.Charge.Approved)
+        </div><br />
+        <div class="row form-group-lg">
+            @Html.LabelFor(c => c.Charge.CardId, "Card", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("Charge.CardId",null , "select card", new { @class = "form-control", @id = "ddlCardNumber" })
+            </div>
+        </div><br />
+        <div class="row form-group-lg">
+            @Html.LabelFor(c => c.Charge.Location, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(c => c.Charge.Location, new { @class = "form-control" })
+            </div>
+        </div><br />
+        <div class="form-group-lg">
+            <div class="col-md-offset-4 col-md-8">
+                <div class="btn-group-lg">
+                    <input type="submit"  value="Submit" class="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+    <div class="hidden">
+        
+
+    </div>
+    
+
+</main>
+
+
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+
+}
+<script defer>
+    var option = document.createElement("option");
+    option.innerHTML = "New";
+    var select = document.getElementById("ddlCardNumber");
+    select.appendChild(option);
+
+    select.onchange = function () {
+        if (option.selected) {
+            document.getElementById("open").click();
+        }
+    }
+  
+</script>

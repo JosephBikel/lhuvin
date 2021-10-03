@@ -1,0 +1,323 @@
+﻿@model Lhuvin.Billing.ViewModels.BalancesViewModal
+@{
+    ViewBag.Title = "Index";
+}
+<h2 class="page-header text-center">באלאנסן</h2>
+@foreach (var client in Model.Clients)
+    {
+        using (Ajax.BeginForm(actionName: "Create", controllerName: "Payments", routeValues: null, ajaxOptions: new AjaxOptions() { HttpMethod = "POST", OnSuccess = "paymentSaved(this, data)", OnComplete = "paymentComplete"  },
+        htmlAttributes: new { @class = "paymentForm", id = "paymentForm_" + client.Id })) { }
+
+}
+    <table class="table table-bordered dataTable">
+        <thead>
+            <tr>
+                <th>נאמען</th>
+                <th colspan="3">וואכן</th>
+                <th>באלאנס</th>
+                <th colspan="2">פעימענט</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var client in Model.Clients)
+            {
+                var count = Model.UnPaidWeeks.Where(w => w.ClientId == client.Id).Count() + 1;
+
+                <tr class="clientTr" clientId="@client.Id">
+                    <td rowspan="@count">
+                        @client.FirstName @client.LastName<br />
+                        <span dir="ltr">@client.FathersCellNumber</span>
+                    </td>
+                    <th scope="col">שבוע</th>
+                    <th scope="col">למדתי</th>
+                    <th scope="col">נשאר חוב</th>
+                    <td class="total_@client.Id" rowspan="@count">@Model.UnPaidWeeks.Where(w => w.ClientId == client.Id).Select(w => w.BalanceDue).Sum() </td>
+                    <th scope="col">Type</th>
+                    <th scope="col">Amount</th>
+                </tr>
+                foreach (var week in Model.UnPaidWeeks.Where(w => w.ClientId == client.Id).ToList())
+                {
+                    var total = Model.UnPaidWeeks.Where(w => w.ClientId == client.Id).ToList().GetRange(0, Model.UnPaidWeeks.Where(w => w.ClientId == client.Id).ToList().IndexOf(week) + 1).Select(w => w.BalanceDue).Sum();
+                    <tr class="weeks_@client.Id">
+                        <td>@Html.ActionLink(week.Parsha.Name, "Details", "ClientWeeks", new { week.Id}, null)</td>
+                        <td>@week.Sum</td>
+                        <td class="weekBalance">@week.BalanceDue</td>
+                    </tr>
+                }
+                @Html.Partial("../Balance/CreatePaymentPartial", new Lhuvin.Billing.Models.Payment(client.Id))
+            }
+        </tbody>
+    </table>
+    @*   <table class="table table-bordered ">
+               <thead>
+                   <tr>
+                       <th rowspan="2">נאמען</th>
+                       <th colspan="3">באלאנסן</th>
+                       <th rowspan="2">פעימענט</th>
+                       <th>Create Invoice</th>
+                   </tr>
+                   <tr>
+                       <th scope="col">Order</th>
+                       <th scope="col">Received</th>
+                       <th scope="col">Accepted</th>
+                   </tr>
+               </thead>
+               <tbody>
+                   @foreach (var client in Model.Clients)
+                   {
+                       <tr class="clientTr">
+
+                           <td rowspan="@Model.UnPaidWeeks.Where(w => w.ClientId == client.Id).Count()">@client.FirstName @client.LastName</td>
+
+                           @using (Ajax.BeginForm("Create", "Invoices", null, new AjaxOptions() { HttpMethod = "Post", OnSuccess = "invoiceSaved" }, htmlAttributes: new { @class = "invoiceForm" }))
+                           {
+                               var index = 0;
+
+                               <input type="hidden" name="clientId" value="@client.Id" />
+                               <input type="hidden" name="Detaild" class="detaild" />
+                               <input type="hidden" name="report" class="report" />
+
+                               foreach (var week in Model.UnPaidWeeks.Where(w => w.ClientId == client.Id))
+                               {
+                               <tr>
+                                   <td>
+                                       <input type="hidden" class="inputWeekId" name="weeks[@index].Id" value="@week.Id" />
+                                       <input type="hidden" name="weeks[@index].Billed" value="false" class="weekBilled" />
+
+                                       @week.Parsha.Name
+                                   </td>
+                                   <td>@week.Sum </td>
+                                   <td class="weekBalance">@week.BalanceDue</td>
+                                   @index++;
+                               </tr>
+                           }
+                       }
+
+                       <td rowspan="@Model.UnPaidWeeks.Where(w => w.ClientId == client.Id).Count()">
+                           @Html.Partial("../Payments/CreatePartial", new Lhuvin.Billing.Models.Payment(client.Id))
+                       </td>
+                       <td rowspan="@Model.UnPaidWeeks.Where(w => w.ClientId == client.Id).Count()">
+                           <button data-toggle="modal" data-target="#generalInvoiceModal" client-name="@client.FirstName @client.LastName" client-id="@client.Id">General</button>
+                           <button type="button" class="detaidInvoiceBtn">Detaild</button>
+                       </td>
+                       </tr>
+                   }
+                   </tbody>
+        </table>*@
+
+
+    <div class="modal fade" id="generalInvoiceModal" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class=" modal-header">
+                    <button type="button" class="close" onclick="CloseModel('#createDayModel', true)" data-dismiss="modal">&times;</button>
+
+                    <h3 class="modal-title text-center">נייע טאג</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center">
+                        <h4 class="ModelClientName"></h4>
+                    </div>
+                    <table class="table table-bordered" id="reportsTable">
+                        <thead>
+                            <tr>
+                                <td>טאג</td>
+                                <td>ריפארט</td>
+                            </tr>
+                        </thead>
+                        <tbody id="reportstbody">
+                        </tbody>
+                    </table>
+                    <label for="report">ריפארט</label>
+                    <textarea rows="6" class="form-control" id="report"></textarea><br />
+                    <input type="hidden" name="ClientId" />
+                    <button type="button" id="submitGeneralForm">submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script defer>
+        const newPaymentsControls = $("td[class*='new-payment_']")
+        newPaymentsControls.each(function (index, td) {
+            const weeks = $("tr[class ='weeks_" + $(td).attr("class").substr(12) + "']")
+            $(td).attr("rowspan", weeks.length)
+            weeks.first().append(td)
+        })
+
+            function submitForm(input, form) {
+                form.submit();
+            
+        }
+        function paymentComplete() {
+            alert("com")
+            $("td").off("click.submit")
+
+        }
+        $("td[class^='new-payment_'] input").change(function (ev) {
+            var input = this
+            var form = $("form[id='" + $(input).attr("form") + "']");
+            $("td:not(.new-payment_" + $(input).attr("form").substr(12) + ")").click(submitForm(input, form))
+           
+        })
+
+      /*  $("#generalInvoiceModal").on("show.bs.modal", function (e) {
+            fillModal(this, e.relatedTarget)
+            var clientTR = $(e.relatedTarget).closest(".clientTr")
+            var clientId = clientTR.find("input[name='clientId']").val()
+            var weeks = clientTR.find(".week.ui-selected")
+            $.each(weeks, function (index, week) {
+                var weekId = $(week).find(".inputWeekId").val()
+                $.ajax({
+                    type: 'GET',
+                    url: '/dailyReports/GetReports/' + clientId,
+                    data: { 'weekId': weekId },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (reports) {
+                        LoadReports(reports)
+                    }
+                })
+            })
+        })
+
+        $("#generalInvoiceModal").on("hidden.bs.modal", function () {
+            $("#reportstbody").empty()
+        })*/
+
+        function paymentSaved(form, payment) {
+            toastr.success("Payment Saved")
+
+            var amount = payment.Amount
+
+            while (amount > 0) {
+                
+                var weeks = $(".weeks_" + $(form).attr("id").substr(12))
+                var week = $(weeks).first()
+                if (week == null) {
+                    break;
+                }
+
+                var weekBalanceTd = week.find(".weekBalance")
+                var weekPaidTd = week.find(".week-paid")
+
+                var weekPaid = parseFloat(weekPaidTd.text())
+                var weekBalance = parseFloat(weekBalanceTd.text())
+               
+                    var totalTd = $(".total_" + $(form).attr("id").substr(12))
+                    var total = parseFloat(totalTd.text()).toFixed(2)
+                    total -= amount
+                    totalTd.text(total.toFixed(2))
+                if (amount >= weekBalance) {
+                    amount -= weekBalance;
+                    week.BalanceDue = 0;
+                    const paymentControls = $("td[class='new-payment_" + week.attr("class").substr(6) + "']")
+                   
+                    paymentControls.each(function (i, td) {
+                        var newRow = document.createElement("tr")
+                        newRow.append("<td></td><td></td><td></td>")
+                        var secondWeek = weeks.first().next()
+                        if (secondWeek == undefined) {
+                            
+                            newRow.append(td)
+                            $(newRow).insertAfter(".clientTr[clientId='" + week.attr("class").substr(6) +"']")
+                        }
+                        else
+                        secondWeek.append(td)
+                    })
+                    week.remove()
+
+                    $.each($(form).closest(".clientTr").find("td[rowspan]"), function (i, td) {
+                        var rowspan = Number($(td).attr("rowspan"))
+                        $(td).attr("rowspan", rowspan - 1)
+                        rowspan = $(td).attr("rowspan")
+                    })
+                }
+                else {
+                    weekBalance -= amount;
+                    weekPaid += amount;
+                    weekBalanceTd.text(weekBalance.toFixed(2))
+                    weekPaidTd.text(weekPaid.toFixed(2))
+                    amount = 0;
+                }
+            }
+            $(form).trigger("reset")
+            $(".type-dd_" + $(form).attr("id").substr(12)).html('<span class="caret"></span> Select Type')
+            $("input[type='hidden'][name='type'][form= '" + $(form).attr("id") + "']").val("")
+            $("input[name='CardId'][form= '" + $(form).attr("id") + "']").closest(".credit-cards").find("li > a").removeClass("btn-primary").val("")
+        }
+
+
+      /*  $(".detaidInvoiceBtn").click(function () {
+            const form = $(this).closest("tr").find(".invoiceForm")
+            form.find("input[name='Detaild']").val(true)
+            form.submit()
+        })
+
+        $("#submitGeneralForm").click(function () {
+            const clientId = $(this).closest(".modal-body").find("input[name='ClientId']").val()
+            const report = $(this).closest(".modal-body").find("#report").val()
+            const form = $('input[name="clientId"][value="' + clientId + '"]').closest("form")
+            form.find(".report").val(report)
+            form.find(".detaild").val(false)
+            form.submit()
+            $(this).closest(".modal").modal("hide")
+        })
+
+        function invoiceSaved() {
+            toastr.success("Invoice Saved")
+        }*/
+        $(".memos").each(function (i, v) {
+            const clientId = $(v).closest("td").find("input[name='ClientId']").attr("form").substr(12)
+            $(v).attr("form", "paymentForm_" + clientId)
+        })
+        const creditCardsUl = $(".credit-cards")
+        $.each(creditCardsUl, function (i, v) {
+            const clientId = $(v).closest("td").find("input[name='ClientId']").attr("form").substr(12)
+            $(v).find("input").each(function (ind, inp) {
+                $(inp).attr("form", "paymentForm_" + clientId)
+            })
+            $.ajax({
+                method: "get",
+                url: "/CreditCards/GetCards/" + clientId,
+                success: function (cards) {
+                    $.each(cards, function (index, card) {
+                        var cardInfo = {
+                            CardNumber: card.CardNumber,
+                            Exp: card.Exp,
+                            Cvv: card.SecurityCode,
+                            Zip: card.Zip
+                        }
+                        var displayCard = "<div>"
+                        $.each(cardInfo, function (name, val) {
+                            displayCard += "<strong>" + name + "</strong>: " + "<span>" + val + "</span><br/>"
+                        })
+                        displayCard += "<input type ='hidden' class ='card-id' value ='" + card.Id + "'/> </div>"
+                        $(v).append("<li class='divider'></li><li><a><details><summary>" + card.Name + "</summary><span class = 'cardDetails'>" + displayCard + "</span></details></a></li>")
+                        $(".cardDetails").click(function (e) {
+                            $(this).closest("td").find("input[name='CardId']").val($(this).find(".card-id").val())
+                            $(this).closest(".credit-cards").find("li > a").removeClass("btn-primary")
+                            $(this).closest("li > a").addClass("btn-primary")
+                        })
+                    })
+                }
+            })
+        })
+
+        $(".payment-type-dd li").click(function (e) {
+            $(this).closest(".dropdown").find(".dropdown-toggle").html('<span class="caret"></span> ' + $(this).text())
+            $(this).closest("td").find("input[type='hidden'][name='type']").val($(this).text())
+            if ($(this).text() == "CreditCard") {
+                e.stopPropagation()
+                $(this).closest(".dropdown").siblings(".new-card-charge").find(".dropdown-toggle").dropdown("toggle")
+            }
+            else if ($(this).text() == "Check") {
+                e.stopPropagation()
+                $(this).closest(".dropdown").siblings(".new-tpcheck").find(".dropdown-toggle").dropdown("toggle")
+            }
+        })
+        $(".charge-menu").click(function (e) {
+            e.stopPropagation();
+        })
+    </script>

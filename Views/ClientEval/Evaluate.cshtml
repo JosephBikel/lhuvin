@@ -1,0 +1,283 @@
+﻿@model Lhuvin.Reports.ViewModals.EvaluateViewModal
+@{
+    ViewBag.Title = "Evaluate";
+}
+@using Lhuvin.Reports.Modals;
+<style>
+    .tooltip-top::before {
+        content: '';
+        position: absolute;
+        display: block;
+        width: 0px;
+        left: 50%;
+        top: 0;
+        border: 15px solid transparent;
+        border-top: 0;
+        border-bottom: 15px solid #5494db;
+        transform: translate(-50%, calc(-100% - 5px));
+    }
+</style>
+<div class=" page-header">
+    <h2 class="text-center">אפשאצונג</h2>
+</div>
+<div class="row mx-5">
+    <div class="col-md-4">
+        <div class="box panel panel-primary">
+            <div class="panel-body">
+                <strong>
+                    @Html.DisplayName("תלמיד"):
+                </strong>
+                @Html.DisplayFor(c => c.Client.FirstName)
+                @Html.DisplayFor(c => c.Client.LastName)
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="box panel panel-primary">
+            <div class="panel-body">
+                <strong>
+                    @Html.DisplayNameFor(c => c.Client.FatherName):
+                </strong>
+                @Html.DisplayFor(c => c.Client.FatherName)
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="box panel panel-primary">
+            <div class=" panel-body">
+                <strong>
+                    @Html.DisplayNameFor(c => c.Client.HomePhone):
+                </strong>
+                <span dir="ltr">
+                    @Html.DisplayFor(c => c.Client.HomePhone)
+                </span>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<div id="dialogs" class="row">
+    @foreach (var category in Model.Categories)
+    {
+        
+        <div class="col-md-4 category-button">
+            <div class="button ">
+                <button type="button" class="col-md-12 btn btn-primary btn-lg openDialog" style="height:100px">@category.Name</button>
+            </div>
+            <div class="hidden header-buttons btn-group-lg btn-group-vertical col-md-12" style="height:max-content">
+                @foreach (var firstHeader in category.SubCatogories)
+                {
+                    <button type="button" class="btn col-md-12 btn btn-primary header-button">@firstHeader.Name</button>
+                }
+            </div>
+        </div>
+        foreach (var firstHeader in category.SubCatogories)
+        {
+            var detailNumber = 0;
+            <dialog id="@firstHeader.Name" class="evalDialogs" title="@category.Name - @firstHeader.Name" style="zindex:1060">
+
+                @using (Ajax.BeginForm(new AjaxOptions() { HttpMethod = "POST", OnComplete = "ClossDialog" }))
+                {
+                    <span class="hidden" id="clientId">@Model.Client.Id</span>
+
+                    <ul class="list-group-horizontal-lg">
+                        @foreach (var header in Model.EvalHeaders.Where(h => h.SubCatogoryId == firstHeader.Id))
+                        {
+                            <li class="headers" data-HeaderId="@header.HeaderId">
+                                <strong>@header.Name</strong>
+                                @if (header.ChildHeaders.Count() > 0)
+                                {
+                                    <ul class="childHeaders" data-id="@header.Id"></ul>
+                                }
+                                @if (header.Details.Select(h => h.Name).All(n => n.Length < 3))
+                                {
+                                    <div style=" display:table; border-collapse:collapse">
+                                        @{
+                                            var headerDetails = header.Details;
+                                            var details = headerDetails.Take(8);
+                                        }
+                                        @while (details.Count() > 0)
+                                        {
+                                            <div style="display:table-row">
+                                                @foreach (var detail in details.ToList())
+                                                {
+                                                    <a onclick="openStatusPopup(this)" class="btn-default" detail-id="@detail.Id" style="display:table-cell; border:solid 1px; width: 20px; text-align:center; cursor:pointer; text-decoration-line:none">
+                                                        @detail.Name
+                                                        @Html.Hidden("evalDetails[" + detailNumber + "].EvalId", detail.Id, new { @class = "input-evalId" })
+                                                        @Html.Hidden("evalDetails[" + detailNumber + "].Status", "", new { @class = "input-status" })
+                                                    </a>
+                                                    detailNumber++;
+                                                    headerDetails.Remove(detail);
+                                                }
+                                                @{
+                                                    details = header.Details.Take(8);
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                    <br />
+                                }
+                                else
+                                {
+                                    <ol>
+                                        @foreach (var detail in header.Details)
+                                        {
+                                            <li>
+                                                <strong>@detail.Name</strong>
+                                                <br />
+                                                <small>@Html.Label(ClientEvalStatus.Good.ToString())</small>
+                                                @Html.Hidden("evalDetails[" + detailNumber + "].EvalId", detail.Id)
+                                                @Html.RadioButton("evalDetails[" + detailNumber + "].Status", ClientEvalStatus.Good)
+
+                                                <small>@Html.Label(ClientEvalStatus.NI.ToString())</small>
+                                                @Html.RadioButton("evalDetails[" + detailNumber + "].Status", ClientEvalStatus.NI)
+
+                                                <small>@Html.Label(ClientEvalStatus.Poor.ToString())</small>
+                                                @Html.RadioButton("evalDetails[" + detailNumber + "].Status", ClientEvalStatus.Poor)
+
+                                            </li>
+                                            detailNumber++;
+                                        }
+                                    </ol>
+                                }
+                            </li>
+                        }
+                    </ul>
+                    <button type="submit">Save</button>
+                }
+                <div class="statusPopup tooltip-top" style="display: none; background-color:black" dir="ltr">
+                    <form class="statusForm">
+                        <input type="hidden" name="EvalId" />
+                        <div class="btn-group-sm">
+                            <button type="submit" name="status" value="Good" class="btn btn-sm btn-success">Good</button>
+                            <button type="submit" name="status" value="NY" class="btn btn-sm btn-warning">NY</button>
+                            <button type="submit" name="status" value="Poor" class="btn btn-sm btn-danger">Poor</button>
+                        </div>
+                    </form>
+                </div>
+            </dialog>
+        }
+
+    }
+
+</div>
+
+@section scripts{
+<script defer>    
+    $(".evalDialogs").dialog({
+        autoOpen: false,
+        width: 'auto',
+        maxHeight: 550,
+        open: function () {
+            $(".ui-dialog-content").scrollTop(0)
+            $(".ui-dialog").css({
+                zIndex: '1060',
+            });
+        }
+    });
+
+        const dialogs = $('dialog');
+
+    $.each(dialogs, function (ind, dialog) {
+        const title = $(dialog).attr("title")
+        var notHeabrow = (/[\u0590-\u05FF]/).test(title)
+        if (notHeabrow) {
+            $(dialog).attr("dir", "ltr")
+        }
+        else
+            $(dialog).attr("dir", "rtl")
+    });
+
+
+    function openStatusPopup(btn) {
+        var button = $(btn)
+        var StatusPupop = button.closest('dialog').find(".statusPopup")
+        var position = button.position();
+        console.log()
+        StatusPupop.css({
+            position: 'absolute',
+            top: position.top + 30 + "px",
+            left: position.left - StatusPupop.width() / 2 + 'px'
+        }).show(function () {
+            $(this).find("input[name='EvalId'] ").val(button.attr("detail-id"))
+            console.log($(this).before())
+        })
+    };
+
+    $(".category-button").hover(function () {
+        $(this).find(".header-buttons").removeClass("hidden");
+        $(this).find(".button").addClass("hidden");
+            
+    })
+        $(".category-button").mouseleave(function () {
+            $(this).find(".header-buttons").addClass("hidden");
+            $(this).find(".button").removeClass("hidden");
+
+        })
+
+    $(".statusForm").on("submit", function (e) {
+        e.preventDefault()
+        $(".input-evalId[value ='" + $(this).find("input[type='hidden']").val() + "']")
+            .next(".input-status").val($(this).find("button[type='submit']:focus").val())
+            .parent().attr("class", $(this).find("button[type='submit']:focus").attr("class").split(' ')[2]);
+        $(this).parent(".statusPopup").hide()
+           
+    })
+
+    var children = $(".headers").filter(function () {
+        return $(this).attr("data-HeaderId") != ""
+    })
+
+    var headers = $(".childHeaders")
+
+    $.each(headers, function (index, value) {
+        $(this).append($.grep(children, function (child) {
+            return child.getAttribute("data-HeaderId") === value.getAttribute("data-id")
+        }))
+    })
+
+
+       
+    $(".header-button").on("click", function () {
+        $("#" + $(this).text()).dialog("open")
+    })
+    $(".evalDialogs").on("dialogopen", function () {
+       
+        const modal = $(this);
+        const clientId = modal.find("#clientId").text();
+        const category = this.id;
+        console.log(JSON.stringify(category))
+        $.ajax({
+            type: "GET",
+            url: '/ClientEval/GetDetails/' + clientId,
+            data: { 'category': category },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (details) {
+                console.log(details)
+                const status = [
+                    "Good", "NI", "Poor"
+                ]
+                const statusClass = [
+                    "btn-success", "btn-warning", "btn-danger"
+                ]
+                $.each(details, function (index, detail) {
+                    var inputEvalId = modal.find("input[value='" + detail.EvalId + "']");
+                    inputEvalId.next(".input-status").val(status[detail.Status]).parent("a").attr("class", statusClass[detail.Status])
+
+                    var button = inputEvalId.parent("li").find("input[value='" + status[detail.Status] + "']");
+
+                    button.prop("checked", true);
+                })
+            }
+        })
+    })
+
+    function ClossDialog() {
+        $(this).parent(".evalDialogs").dialog("close")
+    }
+       
+</script>
+}

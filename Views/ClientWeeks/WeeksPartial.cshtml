@@ -1,0 +1,33 @@
+﻿@model IEnumerable<Lhuvin.Billing.Models.ClientWeek>
+
+
+<table class="table table-bordered table-striped table-hover dataTable" >
+    <thead>
+        <tr style="text-align:right">
+            <th>פרשה</th>
+            <th>טעיג</th>
+            <th>צייט</th>
+            <th>סך</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var week in Model.OrderByDescending(w => w.StartDate))
+        {
+            <tr data-toggle="tooltip" data-placement="top" title="click for details" onclick="window.location='/ClientWeeks/Details/@week.Id'">
+                <td>@Html.DisplayFor(w => week.Parsha.Name)</td>
+                <td>@Html.DisplayFor(w => week.AmountOfDays)</td>
+                <td>
+                    @week.Days.Select(d => d.Time).Sum().ToTimeString()
+                </td>
+                <td>@Html.DisplayFor(w => week.Sum)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@section scripts{
+    <script defer>
+       
+    </script>
+    }

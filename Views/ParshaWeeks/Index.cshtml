@@ -1,0 +1,41 @@
+﻿@model IEnumerable<Lhuvin.Billing.Models.ParshaWeek>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    th {
+        text-align: right
+    }
+</style>
+<div dir="rtl">
+    <header class="page-header">
+        <h2>פרשיות</h2>
+
+    </header>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>פרשת</th>
+                <th>מיום</th>
+                <th>עד יום</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var parsha in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayTextFor(p => parsha.Name)</td>
+                    <td>@parsha.StartDate.ToShortDateString()</td>
+                    <td>@parsha.EndDate.ToShortDateString()</td>
+                    <td>
+                        @Html.ActionLink(" ", "Edit", new { id = parsha.id }, new { @class = "glyphicon glyphicon-pencil" })&nbsp; &nbsp;
+                        @Html.ActionLink(" ", "Delete", new { id = parsha.id }, new { @class = "glyphicon glyphicon-trash" })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,221 @@
+﻿@model Lhuvin.Reports.ViewModals.EvalReportViewModel
+@{
+    ViewBag.Title = "Report";
+}
+<div class=" page-header">
+    <h2 class="text-center">אפשאצונג באריכט</h2>
+</div>
+<div class="row mx-5">
+    <div class="col-md-4">
+        <div class="box panel panel-primary">
+            <div class="panel-body">
+                <strong>
+                    @Html.DisplayName("תלמיד"):
+                </strong>
+                @Html.DisplayFor(c => c.Client.FirstName)
+                @Html.DisplayFor(c => c.Client.LastName)
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="box panel panel-primary">
+            <div class="panel-body">
+                <strong>
+                    @Html.DisplayNameFor(c => c.Client.FatherName):
+                </strong>
+                @Html.DisplayFor(c => c.Client.FatherName)
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="box panel panel-primary">
+            <div class=" panel-body">
+                <strong>
+                    @Html.DisplayNameFor(c => c.Client.HomePhone):
+                </strong>
+                <span dir="ltr">
+                    @Html.DisplayFor(c => c.Client.HomePhone)
+                </span>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6 status">
+        <h2>גוט</h2>
+        @foreach (var category in Model.EvalCategories)
+        {
+            <h3>@category.Name</h3>
+            <ul>
+                @foreach (var sub in category.SubCatogories)
+                {
+                    <li>
+                        <h4>@sub.Name</h4>
+                        <ul>
+                            @foreach (var header in sub.ChildHeaders)
+                            {
+                                <li class="child headers" data-HeaderId="@header.HeaderId">
+                                    <h5>@header.Name</h5>
+                                    @if (header.Details.Count() > 0)
+                                    {
+                                        if (header.Details.All(d => d.Name.Length < 3))
+                                        {
+
+                                            foreach (var detail in Model.ClientEval.Details.Where(d => d.Eval.HeaderId == header.Id && d.Status == Lhuvin.Reports.Modals.ClientEvalStatus.Good))
+                                            {
+                                                <span class="child">@detail.Eval.Name,</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <ol>
+                                                @foreach (var detail in Model.ClientEval.Details.Where(d => d.Eval.HeaderId == header.Id && d.Status == Lhuvin.Reports.Modals.ClientEvalStatus.Good))
+                                                {
+                                                    <li class="child">@detail.Eval.Name </li>
+                                                }
+                                            </ol>
+                                        }
+                                    }
+                                        <ul class=" childHeaders" data-id="@header.Id">
+                                        </ul>
+
+
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+    <div class="col-md-6">
+        <div class="row status">
+            <h2>דאַרף פאַרבעסערונג</h2>
+            @foreach (var category in Model.EvalCategories)
+            {
+                <h3>@category.Name</h3>
+                <ul>
+                    @foreach (var sub in category.SubCatogories)
+                    {
+                        <li>
+                            <h4>@sub.Name</h4>
+                            <ul>
+                                @foreach (var header in sub.ChildHeaders)
+                                {
+                                    <li class="child headers" data-HeaderId="@header.HeaderId">
+                                        <h5>@header.Name</h5>
+                                        @if (header.Details.Count() > 0)
+                                        {
+                                            if (header.Details.All(d => d.Name.Length < 3))
+                                            {
+
+                                                foreach (var detail in Model.ClientEval.Details.Where(d => d.Eval.HeaderId == header.Id && d.Status == Lhuvin.Reports.Modals.ClientEvalStatus.NY))
+                                                {
+                                                    <span class="child">@detail.Eval.Name,</span>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <ol>
+                                                    @foreach (var detail in Model.ClientEval.Details.Where(d => d.Eval.HeaderId == header.Id && d.Status == Lhuvin.Reports.Modals.ClientEvalStatus.NY))
+                                                    {
+                                                        <li class="child">@detail.Eval.Name </li>
+                                                    }
+                                                </ol>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <ul class=" childHeaders" data-id="@header.Id">
+                                            </ul>
+                                        }
+
+
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+        <div class=" row status">
+            <h2>שוואַך</h2>
+            @foreach (var category in Model.EvalCategories)
+            {
+                <h3>@category.Name</h3>
+                <ul>
+                    @foreach (var sub in category.SubCatogories)
+                    {
+                        <li>
+                            <h4>@sub.Name</h4>
+                            <ul>
+                                @foreach (var header in sub.ChildHeaders)
+                                {
+                                    <li class="child headers" data-HeaderId="@header.HeaderId">
+                                        <h5>@header.Name</h5>
+                                        @if (header.Details.Count() > 0)
+                                        {
+                                            if (header.Details.All(d => d.Name.Length < 3))
+                                            {
+
+                                                foreach (var detail in Model.ClientEval.Details.Where(d => d.Eval.HeaderId == header.Id && d.Status == Lhuvin.Reports.Modals.ClientEvalStatus.Poor))
+                                                {
+                                                    <span class="child">@detail.Eval.Name,</span>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <ol class="">
+                                                    @foreach (var detail in Model.ClientEval.Details.Where(d => d.Eval.HeaderId == header.Id && d.Status == Lhuvin.Reports.Modals.ClientEvalStatus.Poor))
+                                                    {
+                                                        <li class="child">@detail.Eval.Name </li>
+                                                    }
+                                                </ol>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <ul class=" childHeaders" data-id="@header.Id">
+                                            </ul>
+                                        }
+
+
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        var children = $(".headers").filter(function () {
+            return $(this).attr("data-HeaderId") != ""
+        })
+
+        var headers = $(".childHeaders")
+
+        $.each(headers, function (index, value) {
+            $(this).append($.grep(children.filter(function () {
+                return this.closest(".status") == value.closest(".status")
+            }), function (child) {
+                return child.getAttribute("data-HeaderId") === value.getAttribute("data-id")
+            }))
+        })
+
+        var EmptyHeaders = $(".headers").filter(function (i, c) {
+            return $(c).find(".child").length == 0
+        })
+
+        $.each(EmptyHeaders, function () {
+            this.remove()
+        })
+    </script>
+}

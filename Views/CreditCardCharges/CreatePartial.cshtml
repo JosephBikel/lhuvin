@@ -1,0 +1,8 @@
+﻿@model Lhuvin.Billing.Models.CreditCardCharge
+<ul class="credit-cards dropdown-menu dropdown-menu-right charge-menu" dir="ltr"style="text-align:left">
+    <li><span>
+    @Html.HiddenFor(c => c.CardId, new { Value = ViewBag.CardId })
+    @Html.LabelFor(c => c.Location)&nbsp;
+    @Html.TextBoxFor(c => c.Location, new { Value = ViewBag.Location})
+</span></li> 
+</ul>

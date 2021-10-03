@@ -1,0 +1,42 @@
+﻿@model IEnumerable<Lhuvin.Billing.Models.ClientWeek>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<header class="page-header">
+    <h2>Weeks</h2>
+</header>
+
+<table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Client</th>
+            <th>Parsha</th>
+            <th>Amount Of Days</th>
+            <th>Total Time</th>
+            <th>Sum</th>
+            <th>Billed</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var week in Model)
+        {
+            <tr data-toggle="tooltip" title="click for details" onclick="window.location='/ClientWeeks/Details/@week.Id'">
+                <td>
+                    @Html.DisplayFor(w => week.Client.FirstName)
+                    @Html.DisplayFor(w => week.Client.LastName)
+                </td>
+                <td>@Html.DisplayFor(w => week.Parsha.Name)</td>
+                <td>@Html.DisplayFor(w => week.AmountOfDays)</td>
+                <td>
+                    @week.Days.Select(d => d.Time).Sum().ToTimeString()
+                </td>
+                <td>@Html.DisplayFor(w => week.Sum)</td>
+                <td>@Html.DisplayFor(w => week.Billed)</td>
+            </tr>
+        }
+        </tbody>
+</table> 
+
+
+@ViewBag.NewInvoice

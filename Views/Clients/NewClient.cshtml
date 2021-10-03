@@ -1,0 +1,167 @@
+﻿@model  Lhuvin.ViewModels.ClientInfoViewModel
+<div dir="rtl">
+    <header class="page-header">
+        <h1 class="text-center">@ViewBag.Message</h1>
+    </header>
+
+
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "clientForm" }))
+    {
+        <h4 class="text-danger">@ViewBag.Error</h4>
+        <section>
+            <div class=" row">
+                <h3 class="text-center">פערסאנעל אינפא</h3><br />
+            </div>
+            <div class=" row">
+                <div class="col-md-1"></div>
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.Client.FirstName, "* ערשטע נאמען ", new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.Client.FirstName, new { type = "text", @class = "form-control", required = "required" })
+                    @Html.ValidationMessageFor(m => m.Client.FirstName, null, new { @class = "text-danger", dir = "ltr" })
+                </div>
+                <div class="form-group col-md-3">
+
+                    @Html.LabelFor(m => m.Client.LastName, "* לעצטע נאמען ", new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.Client.LastName, new { type = "text", @class = "form-control", required = "required" })
+                    @Html.ValidationMessageFor(m => m.Client.LastName, null, new { @class = "text-danger", dir = "ltr" })
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.Client.FatherName, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.Client.FatherName, new { type = "text", @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Client.FatherName, null, new { @class = "text-danger", dir = "ltr" })
+                </div>
+            </div>
+            <div class="row">
+                <div class=" col-md-3"></div>
+                <div class="form-group col-md-2">
+                    @Html.LabelFor(m => m.Client.Grade, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.Client.Grade, new { type = "text", @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Client.Grade, null, new { @class = "text-danger", dir = "ltr" })
+                </div>
+                <div class="form-group col-md-4">
+                    @Html.LabelFor(m => m.Client.DOB, "Date Of Birth", new { @class = "control-label" })
+                    @if (Model.Client.Id == 0)
+                    {
+                        @Html.TextBoxFor(m => m.Client.DOB, new { type = "date", @class = "form-control", dir = "ltr" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(m => m.Client.DOB, new { type = "text", @class = "form-control", dir = "ltr" })
+                    }
+                    @Html.ValidationMessageFor(m => m.Client.DOB, null, new { @class = "text-danger", dir = "ltr" })
+                    @Html.HiddenFor(c => c.Client.Id)
+                </div>
+            </div>
+        </section>
+        <hr />
+        <section>
+            <h3 class="text-center">קאנטאקט אינפא</h3>
+            <br />
+            <div class="row">
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.Client.HomePhone, "* היים נאמבער", new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.Client.HomePhone, new { @class = "form-control", dir = "ltr", @type = "tel", required = "required" })
+                    @Html.ValidationMessageFor(m => m.Client.HomePhone, null, new { @class = "text-danger", dir = "ltr" })
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.Client.FathersCellNumber, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.Client.FathersCellNumber, new { @class = "form-control", dir = "ltr" })
+                    @Html.ValidationMessageFor(m => m.Client.FathersCellNumber, null, new { @class = "text-danger", dir = "ltr" })
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.Client.MothersCellNumber, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.Client.MothersCellNumber, new { @class = "form-control", dir = "ltr" })
+                    @Html.ValidationMessageFor(m => m.Client.MothersCellNumber, null, new { @class = "text-danger", dir = "ltr" })
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.Client.EmailAddress, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.Client.EmailAddress, new { @class = "form-control", dir = "ltr" })
+                    @Html.ValidationMessageFor(m => m.Client.EmailAddress, null, new { @class = "text-danger", dir = "ltr" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.Client.Address, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.Client.Address, new { @class = "form-control", dir = "ltr" })
+                    @Html.ValidationMessageFor(m => m.Client.Address, null, new { @class = "text-danger", dir = "ltr" })
+                </div>
+                <div class=" form-group col-md-1">
+                    @Html.LabelFor(m => m.Client.Unit, new { @class = "control-label" })<br />
+                    @Html.TextBoxFor(m => m.Client.Unit, new { @class = "form-control", dir = "ltr" })
+                    @Html.ValidationMessageFor(m => m.Client.Unit, null, new { @class = "text-danger", dir = "ltr" })
+                </div>
+                <div class=" form-group col-md-2">
+                    @Html.LabelFor(m => m.Client.City, new { @class = "control-label" })<br />
+                    @Html.TextBoxFor(m => m.Client.City, new { @class = "form-control ", dir = "ltr" })
+                    @Html.ValidationMessageFor(m => m.Client.City, null, new { @class = "text-danger", dir = "ltr" })
+                </div>
+                <div class=" form-group col-md-2">
+                    @Html.LabelFor(m => m.Client.State, new { @class = "control-label" })<br />
+                    @Html.TextBoxFor(m => m.Client.State, new { @class = "form-control", dir = "ltr" })
+                    @Html.ValidationMessageFor(m => m.Client.State, null, new { @class = "text-danger", dir = "ltr" })
+                </div>
+                <div class=" form-group col-md-2">
+                    @Html.LabelFor(m => m.Client.Zip, new { @class = "control-label" })<br />
+                    @Html.TextBoxFor(m => m.Client.Zip, new { @class = "form-control", dir = "ltr" })
+                    @Html.ValidationMessageFor(m => m.Client.Zip, null, new { @class = "text-danger", dir = "ltr" })
+                </div>
+            </div>
+        </section>
+        <hr />
+        <section>
+            <h3 class="text-center">פרייז</h3>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <div class="col-md-1"></div>
+                    <div class="form-group col-md-10">
+                        @Html.LabelFor(m => m.Price.PerHourId, "* פרייז", new { @class = "control-label" })
+                        @Html.DropDownList("Price.PerHourId", null, "Select Price",
+                       new { @class = "form-control", id = "priceId", dir = "ltr" })
+                        @Html.ValidationMessageFor(m => m.Price.PerHourId, null, new { @class = "text-danger", dir = "ltr", id = "priceVal" })
+                        @Html.HiddenFor(m => m.Price.ClientId)
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+        </section>
+        <div class="pager">
+            <div class=" form-group">
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary ">Submit</button>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="">
+        <button hidden id="open" type="button" data-toggle="modal" data-target="#myModal"></button>
+
+    </div>
+
+    @Html.Partial("../Price/NewPricePartial", new Lhuvin.Billing.Models.PricePerHour() { ConfirmationDate = DateTime.Now })
+
+</div>
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script defer>
+        var option = document.createElement("option");
+        option.innerHTML = "New";
+        var select = document.getElementById("priceId");
+        select.appendChild(option);
+
+        document.getElementById("clientForm").onsubmit = function (e) {
+            var price = document.getElementById("priceId");
+            if (price.value == "" && price.innerText != "New") {
+                e.preventDefault()
+                document.getElementById("priceVal").innerText = "Price must be selected";
+            }
+        }
+        select.onchange = function () {
+            if (option.selected) {
+                document.getElementById("open").click();
+            }
+        }
+    </script>
+}

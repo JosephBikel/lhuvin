@@ -1,0 +1,66 @@
+﻿@model Lhuvin.Billing.Models.Payment
+<div class="modal fade" id="createPaymentModal" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h3 class="modal-title text-center">Payment</h3>
+            </div>
+            @using (Ajax.BeginForm(actionName: "Create", controllerName: "Payments", routeValues: null, ajaxOptions: new AjaxOptions() { HttpMethod = "POST", OnSuccess = "paymentSaved(this, data)", OnFailure = "paymentFailed" }, htmlAttributes: new { @class = "paymentForm" }))
+            {
+                <div class="modal-body" dir="ltr">
+                    <div class="text-center">
+                        <h4 class="ModelClientName"></h4>
+                    </div>
+                    <div class="form-horizontal row">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-8">
+                            @Html.HiddenFor(p => p.ClientId)
+                            @Html.HiddenFor(p => p.PaymentDate)
+                            <div class="form-group-sm">
+                                <div class="col-md-6">
+                                    <input type="hidden" name="type" required value="@ViewBag.type" />
+                                    <div class="dropdown payment-type-dd">
+                                        <div class="text-left">
+                                            @Html.LabelFor(p => p.PaymentType)
+                                        </div>
+                                        <button class="btn btn-primary form-control dropdown-toggle type-dd" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            <span class="caret"></span>
+                                           Select Type
+                                        </button>
+                                        <ul class="dropdown-menu payment-type-dd" aria-labelledby="dropdownMenu1">
+                                            @foreach (var type in Enum.GetValues(typeof(Lhuvin.Billing.Models.PaymentType)).Cast<Lhuvin.Billing.Models.PaymentType>().ToList())
+                                            {
+                                                <li><a>@type</a></li>
+                                            }
+                                        </ul>
+                                    </div>
+                                    <div dir="ltr" class="dropdown new-card-charge keepopen">
+                                        <button data-toggle="dropdown" class="dropdown-toggle hidden"></button>
+                                        @Html.Partial("../CreditCardCharges/CreatePartial", new Lhuvin.Billing.Models.CreditCardCharge(Model.ClientId))
+                                    </div>
+                                    <div class="dropdown new-tpcheck">
+                                        <button data-toggle="dropdown" class="dropdown-toggle hidden"></button>
+                                        @Html.Partial("../Payments/TPCheckPartial", new Lhuvin.Billing.Models.TPCheck())
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="text-left">
+                                        @Html.LabelFor(p => p.Amount)
+                                    </div>
+                                    @Html.TextBoxFor(p => p.Amount, new { dir = "ltr", id = "", @class = "form-control" })
+                                    @Html.ValidationMessageFor(p => p.Amount, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="close" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <input type="submit" class="btn btn-primary" value="submit" />
+                </div>
+            }
+        </div>
+    </div>
+</div>

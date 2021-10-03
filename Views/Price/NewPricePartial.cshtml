@@ -1,0 +1,63 @@
+﻿@model Lhuvin.Billing.Models.PricePerHour
+
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h3 class="modal-title text-center">נייע פרייז</h3>
+            </div>
+            @using (Ajax.BeginForm("Create", "Price",null, new AjaxOptions { HttpMethod = "post", OnSuccess = "AddNewPrice"}, new { id = "newPriceForm" }))
+            {
+                <div class="modal-body">
+
+                    @Html.ValidationSummary()
+                    <div class="form-horizontal row">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-10">
+                            <div class="form-group">
+
+                                @Html.Label("price", "פרייז", new { @class = "control-label col-md-3" })
+                                @Html.TextBox("price", null, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+
+                                @Html.Label("באַשרייבונג", new { @class = "control-label col-md-3" })
+                                @Html.TextBox("description", null, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                @Html.CheckBox("isPublic", true)
+                                @Html.Label("פאבליק")
+                            </div>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                    @Html.Hidden("clientId", null)
+                </div>
+                <div class="modal-footer">
+                    <button id="close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input type="submit" name="NewPrice" value="Submit" class="btn btn-primary" />
+                </div>
+            }
+        </div>
+
+    </div>
+</div>
+
+   
+
+<script defer>
+    var priceForm = $("#newPriceForm")
+    priceForm.find("input[name = 'isPublic']").on("change", function (e) {
+        console.log( e.currentTarget)
+        if (this.checked == true)
+            priceForm.find("input[name = 'clientId']").val(null)
+        else
+            priceForm.find("input[name = 'clientId']").val($("#clientForm").find("input[name= 'Client.Id']").val())
+    })
+
+    function AddNewPrice(newPrice) {
+        $("#priceId").append("<option value = '" + newPrice.Id + "' selected>" + newPrice.Description + "\t" + newPrice.Price + "</option>")
+        $("#myModal").modal("hide")
+    }
+</script>

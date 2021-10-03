@@ -1,0 +1,32 @@
+﻿@model Lhuvin.Billing.Models.CreditCard
+    <form method="post" class="form-horizontal" id="newCardForm">
+        @Html.ValidationSummary("", new { @class = "text-danger" })
+
+        @Html.HiddenFor(c => c.ClientId)
+        @Html.AntiForgeryToken()
+        <div class="form-group">
+            @Html.LabelFor(c => c.CardNumber, new { @class = "control-label col-md-3" })
+            @Html.TextBoxFor(c => c.CardNumber, new { @class = "form-control" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(c => c.ExpMonth, new { @class = "control-label col-md-3" })
+            @Html.TextBoxFor(c => c.ExpMonth, new { @class = "form-control" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(c => c.ExpYear, new { @class = "control-label col-md-3" })
+            @Html.TextBoxFor(c => c.ExpYear, new { @class = "form-control" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(c => c.SecurityCode, new { @class = "control-label col-md-3" })
+            @Html.TextBoxFor(c => c.SecurityCode, new { @class = "form-control" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(c => c.Zip, new { @class = "control-label col-md-3" })
+            @Html.TextBoxFor(c => c.Zip, new { @class = "form-control" })
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-7 col-md-5">
+                <input type="submit" name="newCard" value="Submit" class="btn btn-primary" />
+            </div>
+        </div>
+    </form>

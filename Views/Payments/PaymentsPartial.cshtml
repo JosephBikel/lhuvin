@@ -1,0 +1,134 @@
+﻿@model Lhuvin.Models.Client
+<div class="row" dir="ltr">
+    <div class="col-md-12 text-left disabled">
+        @Html.ActionLink("New Payment", "", "", new { id = Model.Id }, new { @class = "btn btn-primary", disabled = "disabled" })
+    </div>
+</div>
+
+
+
+<table class="table table-bordered table-striped dataTable">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Type</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var payment in Model.Payments.OrderByDescending(p => p.PaymentDate))
+        {
+            <tr class="payment-row" payment-id="@payment.Id">
+                <td>
+                    @Ajax.ActionLink(" ", actionName: "EditPartial", controllerName: "Payments", routeValues: new
+                    {
+                        payment.Id
+           }, ajaxOptions: new AjaxOptions { HttpMethod = "get", UpdateTargetId = "paymentModal", InsertionMode = InsertionMode.InsertAfter, OnSuccess = "openPaymentModal" },
+           htmlAttributes: new { @class = "glyphicon glyphicon-pencil" })
+
+                @Ajax.ActionLink(" ", "Delete", "Payments", new { payment.Id },
+                       new AjaxOptions { HttpMethod = "get", UpdateTargetId = "deletePayment", OnSuccess = "openDeletePaymentModal" }, new { @class = "glyphicon glyphicon-trash text-danger" })
+            </td>
+            <td><span dir="ltr">@Html.DisplayFor(w => payment.PaymentDate)</span></td>
+            <td class="Payment-amownt">@payment.Amount.ToString("c")</td>
+            <td>
+                <span class="payment-type">
+                    @Html.DisplayFor(w => payment.PaymentType)
+                </span>
+
+                @if (payment.PaymentType == Lhuvin.Billing.Models.PaymentType.CreditCard && payment.Charge != null)
+                {
+                    <br />
+                    <span dir="ltr">
+                        <strong>name on card:</strong>
+                        <span class="card-name">@payment.Charge.Card.Name</span>
+                        <br />
+                        <strong>card ending:</strong>
+                        <span class="card-ending">@payment.Charge.Card.CardNumber.Substring(payment.Charge.Card.CardNumber.Length - 4)</span>
+                        <br />
+                        <strong>location:</strong>
+                        <span class="card-location">@payment.Charge.Location</span>
+                    </span>
+
+                }
+                else if (payment.PaymentType == Lhuvin.Billing.Models.PaymentType.Check && payment.Check != null)
+                {
+                    <br />
+                    <span dir="ltr">
+                        <strong>memo:</strong>
+                        <span class="memo">@payment.Check.Memo</span>
+                    </span>
+
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+<div id="paymentModal"></div>
+<div id="deletePayment"></div>
+
+<script defer>
+    function openPaymentModal() {
+        $("#editPaymentModal").modal("show").on('hidden.bs.modal', function () {
+            $(this).remove();
+        })
+        $(".payment-type-dd li").click(function (e) {
+            $(this).closest(".dropdown").find(".dropdown-toggle").html('<span class="caret"></span> ' + $(this).text())
+            $(this).closest("form").find("input[type='hidden'][name='type']").val($(this).text())
+            if ($(this).text() == "CreditCard") {
+                e.stopPropagation()
+                $(this).closest(".dropdown").siblings(".new-card-charge").find(".dropdown-toggle").dropdown("toggle")
+            }
+            else if ($(this).text() == "Check") {
+                e.stopPropagation()
+                $(this).closest(".dropdown").siblings(".new-tpcheck").find(".dropdown-toggle").dropdown("toggle")
+            }
+        })
+        $(".charge-menu").click(function (e) {
+            e.stopPropagation();
+        })
+    }
+    const paymentTypes = [
+        "Cash",
+        "CreditCard",
+        "Check",
+        "OJC",
+        "DirectDeposit"
+    ]
+    function paymentEdit(form, payment) {
+        toastr.success("Payment Updated")
+        var paymentRow = $(".payment-row[payment-id='" + payment.Id + "']");
+        paymentRow.find(".Payment-amownt").text("$" + payment.Amount.toFixed(2));
+        paymentRow.find(".payment-type").text(paymentTypes[payment.PaymentType]);
+        if (payment.PaymentType == 1) {
+            paymentRow.find(".card-name").text(payment.Name)
+            paymentRow.find(".card-ending").text(payment.CardEnding)
+            paymentRow.find(".card-location").text(payment.Location)
+        }
+        else if (payment.PaymentType == 2) {
+            paymentRow.find(".memo").text(payment.Memo)
+        }
+        $(form).closest(".modal").modal("hide")
+        $(form).closest(".modal").on('hidden.bs.modal', function () {
+            $(this).remove();
+        })
+    }
+    $(".charge-menu").click(function (e) {
+        e.stopPropagation();
+    })
+
+    function openDeletePaymentModal() {
+        $("#deletePaymentModal").modal("show")
+        $("#deletePaymentModal").modal("show").on('hidden.bs.modal', function () {
+            $(this).remove();
+        })
+    }
+
+    function paymentDeleted(modal, paymentId) {
+        toastr.success("Payment Deleted")
+        $(modal).modal("hide")
+        $(".payment-row[payment-id='" + paymentId + "']").remove()
+    }
+</script>

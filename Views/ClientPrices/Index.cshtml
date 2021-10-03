@@ -1,0 +1,12 @@
+﻿@model IEnumerable<Lhuvin.Billing.Models.ClientPrice>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+@foreach (var clientPrice  in Model)
+{
+ @clientPrice.ClientId   @clientPrice.Client.FirstName @clientPrice.PerHour.Price <br />
+}

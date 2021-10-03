@@ -1,0 +1,37 @@
+﻿@model Lhuvin.Billing.ViewModels.NewClientPriceViewModel
+@{
+    ViewBag.Title = "CreateClientPrice";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>CreateClientPrice</h2>
+
+<h4>@Model.Client.FirstName @Model.Client.LastName</h4>
+
+@using (Html.BeginForm("SaveCreate", "ClientPrices", FormMethod.Post))
+{
+    @Html.HiddenFor(p => p.ClientPrice.ClientId, new { @id = "clientId" } )
+    @Html.LabelFor(p => p.ClientPrice.PerHourId)
+    
+    <select id="select" name="ClientPrice.PerHourId">
+        @foreach (var price in Model.PricePerHours)
+        {
+            <option value="@price.Id">@price.Description</option>
+        }
+        <option>new</option>
+    </select>
+    <input type="submit" value="Submit" />
+}
+
+<script defer>
+  
+    document.getElementById("select").onchange = function () {
+        var selected = $("#select :selected").text();
+        if (selected == "new") {
+            var clientId = Number($('#clientId').val()) ;
+            window.location = '/price/createprice/' + clientId ;
+
+        }
+    }
+    
+</script>

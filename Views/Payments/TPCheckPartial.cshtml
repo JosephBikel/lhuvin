@@ -1,0 +1,5 @@
+﻿@model Lhuvin.Billing.Models.TPCheck
+<div class="dropdown-menu" dir="ltr"style="text-align:left">
+    @Html.LabelFor(t => t.Memo, new {@class = "text-left" })<br />
+    <textarea name="Memo" class="memos">@ViewBag.Memo</textarea>
+</div>

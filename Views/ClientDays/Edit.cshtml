@@ -1,0 +1,75 @@
+﻿@model Lhuvin.Billing.ViewModels.CreateClientDayViewModel
+@{
+    ViewBag.Title = "EditDay";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<header class="page-header">
+    <h2>Edit Day</h2>
+    <dl class="dl-horizontal" data-toggle="tooltip" title="Click for details" onclick="window.location = '/Clients/Details/@Model.Client.Id'">
+        <dt>
+            @Html.DisplayName("Name")
+        </dt>
+        <dd>
+
+            @Html.DisplayFor(c => c.Client.FirstName)
+            @Html.DisplayFor(c => c.Client.LastName)
+
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(c => c.Client.FatherName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(c => c.Client.FatherName)
+        </dd>
+    </dl>
+</header>
+
+<main class="pager">
+
+    <h4> @Model.Date.ToLongDateString()</h4>
+    <br />
+    @using (Html.BeginForm())
+    {
+        @Html.HiddenFor(m => m.DayId) @Html.HiddenFor(m => m.Date)
+
+        <div class="form-horizontal col-md-offset-2">
+
+
+            <div class="row form-group-lg">
+                @Html.LabelFor(m => m.StartTime, new { @class = "control-label col-md-2" })
+                <div class="col-md-10 ">
+                    <div class="col-md-3 ">
+                        @Html.TextBoxFor(m => m.StartTime, new { @class = "form-control text-center", type = "time" })
+                    </div>
+                </div>
+            </div><br />
+            <div class="row form-group-lg">
+                @Html.LabelFor(m => m.EndTime, new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    <div class="col-md-3 ">
+                        @Html.TextBoxFor(m => m.EndTime, new { @class = "col-md-4 form-control text-center", type = "time" })
+                    </div>
+                </div>
+            </div><br />
+            <div class="row form-group-lg">
+                @Html.LabelFor(m => m.BreakDown, new { @class = "control-label col-md-2" })
+                <div class="col-md-8">
+                    @Html.TextAreaFor(m => m.BreakDown, new { @class = "form-control" })
+                </div>
+            </div><br />
+            <div class="row form-group">
+                <div class=" col-md-10">
+                    <div class="btn-group-lg">
+                        <input type="submit" value="Submit" class="btn btn-primary" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</main>
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+
+}
+
